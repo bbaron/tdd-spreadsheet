@@ -1,24 +1,12 @@
 package app;
 
-import java.util.LinkedHashMap;
+public interface Sheet {
 
-class Sheet {
-  private final LinkedHashMap<String, String> cells = new LinkedHashMap<>();
+  String get(String key);
 
-  String get(String key) {
-    String literal = getLiteral(key);
-    try {
-      return Integer.parseInt(literal.trim()) + "";
-    } catch (NumberFormatException e) {
-      return literal;
-    }
-  }
+  void put(String key, String literal);
 
-  public void put(String key, String value) {
-    cells.put(key, value);
-  }
+  String getLiteral(String key);
 
-  public String getLiteral(String key) {
-    return cells.getOrDefault(key, "");
-  }
 }
+
