@@ -44,40 +44,43 @@ public class Lox {
   }
 
   private static void run(String source) {
-    Scanner scanner = new Scanner(source);
-    List<Token> tokens = scanner.scanTokens();
-    Parser parser = new Parser(tokens);
-    Expr expression = parser.parse();
+//    Scanner scanner = new Scanner(source);
+//    List<Token> tokens = scanner.scanTokens();
+//    Parser parser = new Parser(tokens);
+//    Expr expression = parser.parse();
+//
+//    // Stop if there was a syntax error.
+//    if (hadError) return;
 
-    // Stop if there was a syntax error.
-    if (hadError) return;
-
-    String result = interpreter.interpret(expression);
-    String expr = AstPrinter.printExpr(expression);
-    System.out.printf("%s = %s%n", expr, result);
+    String result = interpreter.interpret(source);
+//    String expr = AstPrinter.printExpr(expression);
+    System.out.printf("%s%n", result);
   }
 
   static void unexpectedChar(int column) {
     report(column, "", "Unexpected character.");
   }
 
-  private static void report(int column, String where, String message) {
-    System.out.println(
-        "[column " + column + "] Error" + where + ": " + message);
+  private static String report(int column, String where, String message) {
+    String report =
+        "[column " + column + "] Error" + where + ": " + message;
     hadError = true;
+    return report;
   }
 
-  static void error(Token token, String message) {
+  private static String error(Token token, String message) {
     if (token.type == TokenType.EOF) {
-      report(token.column, " at end", message);
+      return report(token.column, " at end", message);
     } else {
-      report(token.column, " at '" + token.lexeme + "'", message);
+      return report(token.column, " at '" + token.lexeme + "'", message);
     }
   }
 
-  static void runtimeError(RuntimeError error) {
-    System.out.println(error.getMessage() +
-        "\n[line " + error.token.column + "]");
+  static String runtimeError(RuntimeError error) {
+    String msg = error.getMessage() +
+        "\n[column " + error.token.column + "]";
+    System.out.println(msg);
     hadRuntimeError = true;
+    return msg;
   }
 }

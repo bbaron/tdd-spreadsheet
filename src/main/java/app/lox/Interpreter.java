@@ -1,13 +1,28 @@
 package app.lox;
 
+import java.util.List;
+
 public class Interpreter implements Expr.Visitor<Object> {
+
+  public String interpret(String formula) {
+    try {
+      Scanner scanner = new Scanner(formula);
+      List<Token> tokens = scanner.scanTokens();
+      Parser parser = new Parser(tokens);
+      Expr expression = parser.parse();
+      return stringify(evaluate(expression));
+    } catch (LoxError e) {
+      return e.getMessage();
+    }
+  }
+
   String interpret(Expr expression) {
-    String result = null;
+    String result;
     try {
       Object value = evaluate(expression);
       result = stringify(value);
-    } catch (RuntimeError error) {
-      Lox.runtimeError(error);
+    } catch (LoxError error) {
+      result = error.getMessage();
     }
     return result;
   }

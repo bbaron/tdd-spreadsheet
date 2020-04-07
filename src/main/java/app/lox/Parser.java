@@ -2,6 +2,7 @@ package app.lox;
 
 import java.util.List;
 
+import static app.lox.TokenType.EOF;
 import static app.lox.TokenType.LEFT_PAREN;
 import static app.lox.TokenType.MINUS;
 import static app.lox.TokenType.NUMBER;
@@ -11,8 +12,6 @@ import static app.lox.TokenType.SLASH;
 import static app.lox.TokenType.STAR;
 
 class Parser {
-  private static class ParseError extends RuntimeException {
-  }
 
   private final List<Token> tokens;
   private int current = 0;
@@ -22,11 +21,11 @@ class Parser {
   }
 
   Expr parse() {
-    try {
-      return expression();
-    } catch (ParseError error) {
-      return null;
+    Expr expr = expression();
+    if (!isAtEnd()) {
+      error(peek(), "expected end of expression");
     }
+    return expr;
   }
 
   private Expr expression() {
@@ -108,7 +107,7 @@ class Parser {
   }
 
   private boolean isAtEnd() {
-    return peek().type == TokenType.EOF;
+    return peek().type == EOF;
   }
 
   private Token peek() {
@@ -120,8 +119,7 @@ class Parser {
   }
 
   private ParseError error(Token token, String message) {
-    Lox.error(token, message);
-    return new ParseError();
+    throw new ParseError(token, message);
   }
 
   private void synchronize() {

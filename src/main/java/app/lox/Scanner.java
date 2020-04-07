@@ -65,7 +65,7 @@ class Scanner {
         } else if (isAlpha(c)) {
           identifier();
         } else {
-          Lox.unexpectedChar(column);
+          throw new ScannerError(column);
         }
         break;
     }
