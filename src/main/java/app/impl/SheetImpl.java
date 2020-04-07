@@ -14,7 +14,7 @@ public class SheetImpl implements Sheet {
 
   @Override
   public void put(String key, String literal) {
-    cells.put(key, Parser.parse(literal));
+    cells.put(normalize(key), Parser.parse(literal));
   }
 
   @Override
@@ -23,7 +23,12 @@ public class SheetImpl implements Sheet {
   }
 
   private Cell getCell(String key) {
-    return cells.getOrDefault(key, Cell.DEFAULT);
+    return cells.getOrDefault(normalize(key), Cell.DEFAULT);
+  }
+
+  private static String normalize(String key) {
+    if (key == null) return null;
+    return key.toUpperCase();
   }
 }
 

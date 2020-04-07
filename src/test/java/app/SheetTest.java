@@ -77,11 +77,21 @@ class SheetTest {
 
   @Test
   void constantFormula() {
-    Sheet sheet = new SheetImpl();
     sheet.put("A1", "=7");
     assertAll(
         () -> assertEquals("=7", sheet.getLiteral("A1"), "Formula"),
         () -> assertEquals("7", sheet.get("A1"), "Value")
+    );
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"a1", "J23", "aa1", "Az1", "aA1"})
+  void keysAreCaseSensitive(String key) {
+    sheet.put(key, key);
+    assertAll(
+        () -> assertEquals(key, sheet.get(key.toUpperCase()), "upper"),
+        () -> assertEquals(key, sheet.get(key), "original"),
+        () -> assertEquals(key, sheet.get(key.toLowerCase()), "lower")
     );
   }
 }
