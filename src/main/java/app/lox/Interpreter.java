@@ -12,7 +12,8 @@ public class Interpreter implements Expr.Visitor<Object> {
       Expr expression = parser.parse();
       return stringify(evaluate(expression));
     } catch (LoxError e) {
-      return e.getMessage();
+      System.out.println( e.getMessage());
+      return "#Error";
     }
   }
 

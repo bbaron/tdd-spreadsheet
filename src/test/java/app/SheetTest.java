@@ -131,4 +131,18 @@ class SheetTest {
         arguments("=7*(2+3)*((((2+1))))", "105", "Full expression")
     );
   }
+
+  @Test
+  void simpleFormulaError() {
+    sheet.put("A1", "=7*");
+    assertEquals("#Error", sheet.get("A1"));
+  }
+
+  @Test
+  void simpleParenthesisError() {
+    sheet.put("A1", "=(((((7))");
+    assertEquals("#Error", sheet.get("A1"));
+    sheet.put("A1", "=((7)))");
+    assertEquals("#Error", sheet.get("A1"));
+  }
 }
