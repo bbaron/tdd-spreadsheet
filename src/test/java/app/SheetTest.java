@@ -74,4 +74,14 @@ class SheetTest {
     assertEquals(" =7", sheet.get("B1"), "Not a formula");
     assertEquals(" =7", sheet.getLiteral("B1"), "Unchanged");
   }
+
+  @Test
+  void constantFormula() {
+    Sheet sheet = new SheetImpl();
+    sheet.put("A1", "=7");
+    assertAll(
+        () -> assertEquals("=7", sheet.getLiteral("A1"), "Formula"),
+        () -> assertEquals("7", sheet.get("A1"), "Value")
+    );
+  }
 }

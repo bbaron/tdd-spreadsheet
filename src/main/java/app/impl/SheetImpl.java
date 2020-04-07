@@ -5,7 +5,6 @@ import app.Sheet;
 import java.util.LinkedHashMap;
 
 public class SheetImpl implements Sheet {
-  private static final Cell DEF_CELL = Cell.of("");
   private final LinkedHashMap<String, Cell> cells = new LinkedHashMap<>();
 
   @Override
@@ -15,7 +14,7 @@ public class SheetImpl implements Sheet {
 
   @Override
   public void put(String key, String literal) {
-    cells.put(key, Cell.of(literal));
+    cells.put(key, Parser.parse(literal));
   }
 
   @Override
@@ -24,25 +23,7 @@ public class SheetImpl implements Sheet {
   }
 
   private Cell getCell(String key) {
-    return cells.getOrDefault(key, DEF_CELL);
+    return cells.getOrDefault(key, Cell.DEFAULT);
   }
 }
 
-class Cell {
-  final String literal, value;
-
-  private Cell(String literal, String value) {
-    this.literal = literal;
-    this.value = value;
-  }
-
-  static Cell of(String literal) {
-    String value;
-    try {
-      value = Integer.parseInt(literal.trim()) + "";
-    } catch (NumberFormatException e) {
-      value = literal;
-    }
-    return new Cell(literal, value);
-  }
-}
