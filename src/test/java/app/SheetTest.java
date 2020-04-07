@@ -4,12 +4,16 @@ import app.impl.SheetImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class SheetTest {
   private final Sheet sheet = new SheetImpl();
@@ -92,6 +96,39 @@ class SheetTest {
         () -> assertEquals(key, sheet.get(key.toUpperCase()), "upper"),
         () -> assertEquals(key, sheet.get(key), "original"),
         () -> assertEquals(key, sheet.get(key.toLowerCase()), "lower")
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("formulaProvider")
+  void simpleFormulae(String formula, String expected, String description) {
+    sheet.put("A1", formula);
+    assertEquals(expected, sheet.get("A1"), description);
+  }
+
+  static Stream<Arguments> formulaProvider() {
+    return Stream.of(
+        arguments("=(7)", "7", "Parenthetical"),
+        arguments("=((((10))))", "10", "Deep parenthetical"),
+        arguments("=2*3*4", "24", "Times"),
+        arguments("=71+2+3", "76", "Plus"),
+        arguments("=71-2-3", "66", "Minus"),
+        arguments("=15/3", "5", "Divide"),
+        arguments("=-3", "-3", "Unary minus"),
+        arguments("=+3", "3", "Unary plus"),
+        arguments("=3.1+0.2", "3.3", "floating point"),
+        arguments("=3.1234", "3.1234", "floating point"),
+        arguments("=3.12345", "3.1235", "floating point"),
+        arguments("=3.00001", "3", "floating point"),
+        arguments("=3.9999", "3.9999", "floating point"),
+        arguments("=3.999", "3.999", "floating point"),
+        arguments("=3.99", "3.99", "floating point"),
+        arguments("=3.9", "3.9", "floating point"),
+        arguments("=.9", "0.9", "floating point"),
+        arguments("=0.9", "0.9", "floating point"),
+        arguments("=7*(2+3)", "35", "Precedence 1"),
+        arguments("=7*2+3", "17", "Precedence 2"),
+        arguments("=7*(2+3)*((((2+1))))", "105", "Full expression")
     );
   }
 }

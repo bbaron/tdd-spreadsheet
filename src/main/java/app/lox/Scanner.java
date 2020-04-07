@@ -60,7 +60,7 @@ class Scanner {
         column = 0;
         break;
       default:
-        if (isDigit(c)) {
+        if (c == '.' || isDigit(c)) {
           number();
         } else if (isAlpha(c)) {
           identifier();

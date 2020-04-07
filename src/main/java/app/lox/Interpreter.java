@@ -86,17 +86,23 @@ public class Interpreter implements Expr.Visitor<Object> {
   }
 
   private String stringify(Object object) {
-    if (object == null) return "nil";
+    if (object == null) return "";
 
     // Hack. Work around Java adding ".0" to integer-valued doubles.
     if (object instanceof Double) {
-      String text = object.toString();
-      if (text.endsWith(".0")) {
-        text = text.substring(0, text.length() - 2);
+      String text = String.format("%.4f", object);
+      int end = text.length() - 1;
+      while (text.charAt(end) != '.') {
+        if (text.charAt(end) != '0') break;
+        end--;
       }
+      text = text.substring(0, end + 1);
+      if (text.charAt(text.length() - 1) == '.')
+        text = text.substring(0, text.length() - 1);
       return text;
     }
 
     return object.toString();
   }
+
 }

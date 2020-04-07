@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 
 public class SheetImpl implements Sheet {
   private final LinkedHashMap<String, Cell> cells = new LinkedHashMap<>();
+  private final Evaluator evaluator = new Evaluator();
 
   @Override
   public String get(String key) {
@@ -14,7 +15,7 @@ public class SheetImpl implements Sheet {
 
   @Override
   public void put(String key, String literal) {
-    cells.put(normalize(key), Parser.parse(literal));
+    cells.put(normalize(key), evaluator.parse(literal));
   }
 
   @Override
