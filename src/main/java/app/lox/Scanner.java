@@ -11,6 +11,7 @@ class Scanner {
   private int start = 0;
   private int current = 0;
   private int line = 1;
+  private int column = 0;
 
   Scanner(String source) {
     this.source = source;
@@ -23,7 +24,7 @@ class Scanner {
       scanToken();
     }
 
-    tokens.add(new Token(EOF, "", null, line));
+    tokens.add(new Token(EOF, "", null, column));
     return tokens;
   }
 
@@ -56,6 +57,7 @@ class Scanner {
 
       case '\n':
         line++;
+        column = 0;
         break;
       default:
         if (isDigit(c)) {
@@ -63,7 +65,7 @@ class Scanner {
         } else if (isAlpha(c)) {
           identifier();
         } else {
-          Lox.error(line, "Unexpected character.");
+          Lox.unexpectedChar(column);
         }
         break;
     }
@@ -124,6 +126,7 @@ class Scanner {
 
   private char advance() {
     current++;
+    column++;
     return source.charAt(current - 1);
   }
 
