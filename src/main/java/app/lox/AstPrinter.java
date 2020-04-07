@@ -1,6 +1,11 @@
 package app.lox;
 
 public class AstPrinter implements Expr.Visitor<String> {
+
+  static String printExpr(Expr expr) {
+    return new AstPrinter().print(expr);
+  }
+
   String print(Expr expr) {
     return expr.accept(this);
   }
@@ -48,6 +53,6 @@ public class AstPrinter implements Expr.Visitor<String> {
         new Expr.Grouping(
             new Expr.Literal(45.67)));
 
-    System.out.println(new AstPrinter().print(expression));
+    System.out.println(printExpr(expression));
   }
 }
