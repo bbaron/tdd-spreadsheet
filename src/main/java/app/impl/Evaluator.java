@@ -18,7 +18,7 @@ class Evaluator {
     String formula = literal;
     Object value = tryInteger(literal);
     if (value != null) {
-      formula = "=" + value;
+      interpreter.define(key, value);
     } else if (literal.charAt(0) != '=') {
       return new Cell(key, literal, literal);
     }

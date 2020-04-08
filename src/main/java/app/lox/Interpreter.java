@@ -116,4 +116,7 @@ public class Interpreter implements Expr.Visitor<Object> {
     return object.toString();
   }
 
+  public void define(Key key, Object value) {
+    environment.define(key, value);
+  }
 }
