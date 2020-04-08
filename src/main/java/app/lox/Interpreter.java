@@ -10,8 +10,12 @@ import java.util.List;
 import static app.SheetLogger.Verbosity.DEBUG;
 
 public class Interpreter implements Expr.Visitor<Object> {
-  private final Environment environment = new Environment();
+  private final Environment environment;
   private final SheetLogger logger = new StdOutLogger(DEBUG);
+
+  public Interpreter(Environment environment) {
+    this.environment = environment;
+  }
 
   public String interpret(Key key, String formula) {
     try {
@@ -122,7 +126,4 @@ public class Interpreter implements Expr.Visitor<Object> {
     return object.toString();
   }
 
-  public void define(Key key, Object value) {
-    environment.define(key, value);
-  }
 }

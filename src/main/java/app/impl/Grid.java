@@ -1,12 +1,14 @@
 package app.impl;
 
+import app.lox.Environment;
 import app.lox.Interpreter;
 
 import java.util.LinkedHashMap;
 
 class Grid {
   private final LinkedHashMap<Key, Cell> cells = new LinkedHashMap<>();
-  private final Interpreter interpreter = new Interpreter();
+  private final Environment environment = new Environment();
+  private final Interpreter interpreter = new Interpreter(environment);
 
   String get(String key) {
     return getCell(key).value;
@@ -31,7 +33,7 @@ class Grid {
     String formula = literal;
     Object value = tryInteger(literal);
     if (value != null) {
-      interpreter.define(key, value);
+      environment.define(key, value);
     } else if (literal.charAt(0) != '=') {
       return new Cell(key, literal, literal);
     }
