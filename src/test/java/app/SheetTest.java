@@ -177,4 +177,21 @@ class SheetTest {
     sheet.put("A2", "=A1");
     assertEquals("8", sheet.get("A2"), "cell lookup");
   }
+
+  @Test
+  void formulasCanReferenceOtherCells() {
+    sheet.put("A1", "8");
+    sheet.put("A2", "3");
+    sheet.put("B1", "=A1*(A1-A2)+A2/3");
+    assertEquals("41", sheet.get("B1"), "calculation with cells");
+
+  }
+
+  @Test
+  void formulasRecalculate() {
+    sheet.put("A2", "3");
+    sheet.put("B1", "=A2");
+    sheet.put("A2", "6");
+    assertEquals("6", sheet.get("B1"), "re-calculation");
+  }
 }

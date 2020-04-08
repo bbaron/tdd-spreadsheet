@@ -19,9 +19,9 @@ public class Interpreter implements Expr.Visitor<Object> {
       List<Token> tokens = scanner.scanTokens();
       Parser parser = new Parser(tokens);
       Expr expression = parser.parse();
-      String value = stringify(evaluate(expression));
+      Object value = evaluate(expression);
       environment.define(key, value);
-      return value;
+      return stringify(value);
     } catch (SheetError e) {
       logger.debug(e, "error in interpret");
       return "#Error";
