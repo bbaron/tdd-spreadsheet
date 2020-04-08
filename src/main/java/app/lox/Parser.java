@@ -3,6 +3,7 @@ package app.lox;
 import java.util.List;
 
 import static app.lox.TokenType.EOF;
+import static app.lox.TokenType.IDENTIFIER;
 import static app.lox.TokenType.LEFT_PAREN;
 import static app.lox.TokenType.MINUS;
 import static app.lox.TokenType.NUMBER;
@@ -69,6 +70,10 @@ class Parser {
   private Expr primary() {
     if (match(NUMBER)) {
       return new Expr.Literal(previous().literal);
+    }
+
+    if (match(IDENTIFIER)) {
+      return new Expr.Variable(previous());
     }
 
     if (match(LEFT_PAREN)) {

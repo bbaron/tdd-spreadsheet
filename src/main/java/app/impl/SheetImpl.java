@@ -15,7 +15,7 @@ public class SheetImpl implements Sheet {
 
   @Override
   public void put(String key, String literal) {
-    cells.put(normalize(key), evaluator.parse(literal));
+    cells.put(normalize(key), evaluator.parse(key, literal));
   }
 
   @Override

@@ -3,16 +3,19 @@ package app.lox;
 import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object> {
+  private final Environment environment = new Environment();
 
-  public String interpret(String formula) {
+  public String interpret(String key, String formula) {
     try {
       Scanner scanner = new Scanner(formula);
       List<Token> tokens = scanner.scanTokens();
       Parser parser = new Parser(tokens);
       Expr expression = parser.parse();
-      return stringify(evaluate(expression));
+      String value = stringify(evaluate(expression));
+      environment.define(key, value);
+      return value;
     } catch (LoxError e) {
-      System.out.println( e.getMessage());
+      System.out.println(e.getMessage());
       return "#Error";
     }
   }
@@ -26,6 +29,10 @@ public class Interpreter implements Expr.Visitor<Object> {
       result = error.getMessage();
     }
     return result;
+  }
+
+  private Object evaluate(Expr expr) {
+    return expr.accept(this);
   }
 
   @Override
@@ -72,8 +79,9 @@ public class Interpreter implements Expr.Visitor<Object> {
     }
   }
 
-  private Object evaluate(Expr expr) {
-    return expr.accept(this);
+  @Override
+  public Object visitVariableExpr(Expr.Variable expr) {
+    return environment.get(expr.name);
   }
 
   private void checkNumberOperand(Token operator, Object operand) {

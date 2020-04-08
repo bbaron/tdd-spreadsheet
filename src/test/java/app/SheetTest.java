@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -33,6 +32,14 @@ class SheetTest {
           assertEquals(s, sheet.get(theKey));
         });
     assertAll(es);
+  }
+
+  @Test
+  void numbersAreStored() {
+    sheet.put("A1", "13");
+    assertEquals("13", sheet.get("A1"));
+    sheet.put("A1", "13.1");
+    assertEquals("13.1", sheet.get("A1"));
   }
 
   @Test
@@ -144,5 +151,12 @@ class SheetTest {
     assertEquals("#Error", sheet.get("A1"));
     sheet.put("A1", "=((7)))");
     assertEquals("#Error", sheet.get("A1"));
+  }
+
+  @Test
+  void cellReferenceWorks() {
+    sheet.put("A1", "8");
+    sheet.put("A2", "=A1");
+    assertEquals("8", sheet.get("A2"), "cell lookup");
   }
 }
