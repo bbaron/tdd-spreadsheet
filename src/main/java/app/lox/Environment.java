@@ -13,10 +13,6 @@ class Environment {
   }
 
   Object get(Token name) {
-    if (values.containsKey(name.key)) {
-      return values.get(name.key);
-    }
-
-    throw new RuntimeError(name, "Undefined key '" + name.key + "'.");
+    return values.computeIfAbsent(name.key, k -> 0.0);
   }
 }

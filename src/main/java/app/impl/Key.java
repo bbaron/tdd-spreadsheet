@@ -3,24 +3,33 @@ package app.impl;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import static java.util.Objects.requireNonNull;
+import java.util.regex.Pattern;
 
 public class Key {
   private static final ConcurrentMap<String, Key> keys = new ConcurrentHashMap<>();
   private final String value;
+  private static final Pattern KEY_REGEX = Pattern.compile("^[A-Z]+[0-9]+$");
 
   private Key(String value) {
     this.value = value;
   }
 
   public static Key of(String value) {
-    String norm = requireNonNull(normalize(value));
+    String norm = validate(value);
     return keys.computeIfAbsent(norm, Key::new);
   }
 
   private static String normalize(String key) {
     return key.toUpperCase();
+  }
+
+  private static String validate(String raw) {
+    if (raw == null) throw new KeyError("null key");
+    String key = normalize(raw);
+    if (!KEY_REGEX.matcher(key).matches()) {
+      throw new KeyError("invalid key: " + raw);
+    }
+    return key;
   }
 
   @Override

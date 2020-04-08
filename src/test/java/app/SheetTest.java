@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class SheetTest {
@@ -21,6 +22,17 @@ class SheetTest {
   void cellsAreEmptyByDefault() {
     assertEquals("", sheet.get("A1"));
     assertEquals("", sheet.get("ZX347"));
+  }
+
+  @Test
+  void cellKeysMustValidate() {
+    assertThrows(SheetError.class, () -> sheet.get("=A1"));
+  }
+
+  @Test
+  void undefinedCellRefsDefaultTo0() {
+    sheet.put("A2", "=A1");
+    assertEquals("0", sheet.get("A2"));
   }
 
   @Test
@@ -48,14 +60,20 @@ class SheetTest {
     sheet.put("X27", "Second");
     sheet.put("ZX901", "Third");
 
-    assertEquals("First", sheet.get("A1"));
-    assertEquals("Second", sheet.get("X27"));
-    assertEquals("Third", sheet.get("ZX901"));
+    assertAll("all",
+        () -> assertAll("set 1",
+            () -> assertEquals("First", sheet.get("A1")),
+            () -> assertEquals("Second", sheet.get("X27")),
+            () -> assertEquals("Third", sheet.get("ZX901"))),
 
-    sheet.put("A1", "Fourth");
-    assertEquals("Fourth", sheet.get("A1"));
-    assertEquals("Second", sheet.get("X27"));
-    assertEquals("Third", sheet.get("ZX901"));
+        () -> {
+          sheet.put("A1", "Fourth");
+          assertAll("set 2",
+              () -> assertEquals("Fourth", sheet.get("A1")),
+              () -> assertEquals("Second", sheet.get("X27")),
+              () -> assertEquals("Third", sheet.get("ZX901")));
+        }
+    );
   }
 
   @ParameterizedTest

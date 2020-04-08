@@ -1,11 +1,17 @@
 package app.lox;
 
+import app.SheetError;
+import app.SheetLogger;
 import app.impl.Key;
+import app.impl.StdOutLogger;
 
 import java.util.List;
 
+import static app.SheetLogger.Verbosity.DEBUG;
+
 public class Interpreter implements Expr.Visitor<Object> {
   private final Environment environment = new Environment();
+  private final SheetLogger logger = new StdOutLogger(DEBUG);
 
   public String interpret(Key key, String formula) {
     try {
@@ -16,8 +22,8 @@ public class Interpreter implements Expr.Visitor<Object> {
       String value = stringify(evaluate(expression));
       environment.define(key, value);
       return value;
-    } catch (LoxError e) {
-      System.out.println(e.getMessage());
+    } catch (SheetError e) {
+      logger.debug(e, "error in interpret");
       return "#Error";
     }
   }

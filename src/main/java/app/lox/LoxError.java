@@ -1,6 +1,8 @@
 package app.lox;
 
-public class LoxError extends RuntimeException {
+import app.SheetError;
+
+public class LoxError extends SheetError {
   public LoxError(String message) {
     super(message);
   }
