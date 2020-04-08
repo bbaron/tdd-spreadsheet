@@ -13,15 +13,14 @@ class Evaluator {
     }
   }
 
-
-  Cell parse(String key, String literal) {
-    if (literal == null || literal.isEmpty()) return Cell.DEFAULT;
+  Cell parse(Key key, String literal) {
+    if (literal == null || literal.isEmpty()) return Cell.empty(key);
     String formula = literal;
     Object value = tryInteger(literal);
     if (value != null) {
       formula = "=" + value;
-    } else if (literal.charAt(0) != '='){
-      return new Cell(literal, literal);
+    } else if (literal.charAt(0) != '=') {
+      return new Cell(key, literal, literal);
     }
 
     if (formula.charAt(0) == '=' && formula.length() > 1) {
@@ -29,6 +28,6 @@ class Evaluator {
     }
 
     String result = interpreter.interpret(key, formula);
-    return new Cell(literal, result);
+    return new Cell(key, literal, result);
   }
 }

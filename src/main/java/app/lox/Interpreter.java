@@ -1,11 +1,13 @@
 package app.lox;
 
+import app.impl.Key;
+
 import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object> {
   private final Environment environment = new Environment();
 
-  public String interpret(String key, String formula) {
+  public String interpret(Key key, String formula) {
     try {
       Scanner scanner = new Scanner(formula);
       List<Token> tokens = scanner.scanTokens();

@@ -1,20 +1,22 @@
 package app.lox;
 
+import app.impl.Key;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 class Environment {
-  private final Map<String, Object> values = new LinkedHashMap<>();
+  private final Map<Key, Object> values = new LinkedHashMap<>();
 
-  void define(String name, Object value) {
+  void define(Key name, Object value) {
     values.put(name, value);
   }
 
   Object get(Token name) {
-    if (values.containsKey(name.lexeme)) {
-      return values.get(name.lexeme);
+    if (values.containsKey(name.key)) {
+      return values.get(name.key);
     }
 
-    throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
+    throw new RuntimeError(name, "Undefined key '" + name.key + "'.");
   }
 }

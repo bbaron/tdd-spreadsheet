@@ -1,5 +1,7 @@
 package app.lox;
 
+import app.impl.Key;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -136,6 +138,8 @@ class Scanner {
 
   private void addToken(TokenType type, Object literal) {
     String text = source.substring(start, current);
-    tokens.add(new Token(type, text, literal, line));
+
+    Key key = type == IDENTIFIER ? Key.of(text) : null;
+    tokens.add(new Token(type, text, literal, column, key));
   }
 } 
