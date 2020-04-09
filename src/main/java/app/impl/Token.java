@@ -1,17 +1,16 @@
-package app.lox;
+package app.impl;
 
-import app.impl.Key;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 final class Token {
-  final TokenType type;
-  final String lexeme;
-  final Object literal;
-  final int column;
-  final Key key;
+  public final TokenType type;
+  public final String lexeme;
+  public final Object literal;
+  public final int column;
+  public final Key key;
 
-  Token(TokenType type, String lexeme, Object literal, int column, Key key) {
+  public Token(TokenType type, String lexeme, Object literal, int column, Key key) {
     this.type = type;
     this.lexeme = lexeme;
     this.literal = literal;
@@ -19,7 +18,7 @@ final class Token {
     this.key = key;
   }
 
-  Token(TokenType type, String lexeme, Object literal, int column) {
+  public Token(TokenType type, String lexeme, Object literal, int column) {
     this(type, lexeme, literal, column, null);
   }
 
@@ -27,4 +26,8 @@ final class Token {
     return String.format("Token(type = %s, lexeme = '%s', literal = %s, column = %s, key = %s",
         type, lexeme, literal, column, key);
   }
-}       
+
+  public boolean isAtEnd() {
+    return type == TokenType.EOF;
+  }
+}

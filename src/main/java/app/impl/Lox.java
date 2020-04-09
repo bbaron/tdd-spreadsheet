@@ -1,6 +1,6 @@
-package app.lox;
+package app.impl;
 
-import app.impl.Key;
+import app.exceptions.RuntimeError;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -80,8 +80,7 @@ public class Lox {
   }
 
   static String runtimeError(RuntimeError error) {
-    String msg = error.getMessage() +
-        "\n[column " + error.token.column + "]";
+    String msg = error.getMessage();
     System.out.println(msg);
     hadRuntimeError = true;
     return msg;

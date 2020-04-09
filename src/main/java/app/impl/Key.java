@@ -1,5 +1,7 @@
 package app.impl;
 
+import app.exceptions.KeyError;
+
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;

@@ -1,23 +1,23 @@
-package app.lox;
+package app.impl;
 
-import app.SheetError;
-import app.SheetLogger;
-import app.impl.Key;
-import app.impl.StdOutLogger;
+import app.exceptions.RuntimeError;
+import app.exceptions.SheetError;
+import app.misc.SheetLogger;
+import app.misc.StdOutLogger;
 
 import java.util.List;
 
-import static app.SheetLogger.Verbosity.DEBUG;
+import static app.misc.SheetLogger.Verbosity.DEBUG;
 
-public class Interpreter implements Expr.Visitor<Object> {
+class Interpreter implements Expr.Visitor<Object> {
   private final Environment environment;
   private final SheetLogger logger = new StdOutLogger(DEBUG, getClass());
 
-  public Interpreter(Environment environment) {
+  Interpreter(Environment environment) {
     this.environment = environment;
   }
 
-  public Expr interpret(Key key, String formula) {
+  Expr interpret(Key key, String formula) {
     try {
       Scanner scanner = new Scanner(formula);
       List<Token> tokens = scanner.scanTokens();
@@ -99,12 +99,12 @@ public class Interpreter implements Expr.Visitor<Object> {
 
   private void checkNumberOperand(Token operator, Object operand) {
     if (operand instanceof Double) return;
-    throw new RuntimeError(operator, "Operand must be a number.");
+    throw new RuntimeError(operator.column, "Operand must be a number.");
   }
 
   private void checkNumberOperands(Token operator, Object left, Object right) {
     if (left instanceof Double && right instanceof Double) return;
-    throw new RuntimeError(operator, "Operands must be numbers.");
+    throw new RuntimeError(operator.column, "Operands must be numbers.");
   }
 
 }

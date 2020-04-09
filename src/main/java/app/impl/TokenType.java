@@ -1,4 +1,4 @@
-package app.lox;
+package app.impl;
 
 enum TokenType {
   LEFT_PAREN, RIGHT_PAREN,

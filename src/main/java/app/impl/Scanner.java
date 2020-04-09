@@ -1,18 +1,25 @@
-package app.lox;
+package app.impl;
 
-import app.impl.Key;
+import app.exceptions.ScannerError;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static app.lox.TokenType.*;
+import static app.impl.TokenType.EOF;
+import static app.impl.TokenType.IDENTIFIER;
+import static app.impl.TokenType.LEFT_PAREN;
+import static app.impl.TokenType.MINUS;
+import static app.impl.TokenType.NUMBER;
+import static app.impl.TokenType.PLUS;
+import static app.impl.TokenType.RIGHT_PAREN;
+import static app.impl.TokenType.SLASH;
+import static app.impl.TokenType.STAR;
 
 class Scanner {
   private final String source;
   private final List<Token> tokens = new ArrayList<>();
   private int start = 0;
   private int current = 0;
-  private int line = 1;
   private int column = 0;
 
   Scanner(String source) {
@@ -58,7 +65,6 @@ class Scanner {
         break;
 
       case '\n':
-        line++;
         column = 0;
         break;
       default:
@@ -96,14 +102,6 @@ class Scanner {
 
   private boolean isDigit(char c) {
     return c >= '0' && c <= '9';
-  }
-
-  private boolean match(char expected) {
-    if (isAtEnd()) return false;
-    if (source.charAt(current) != expected) return false;
-
-    current++;
-    return true;
   }
 
   private char peek() {

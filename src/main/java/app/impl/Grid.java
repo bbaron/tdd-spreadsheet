@@ -1,13 +1,9 @@
 package app.impl;
 
-import app.lox.Environment;
-import app.lox.Expr;
-import app.lox.Interpreter;
-
 import java.util.LinkedHashMap;
 
-import static app.Helpers.nullToEmpty;
-import static app.Helpers.stringify;
+import static app.misc.Helpers.nullToEmpty;
+import static app.misc.Helpers.stringify;
 
 class Grid {
   private final LinkedHashMap<Key, Cell> cells = new LinkedHashMap<>();

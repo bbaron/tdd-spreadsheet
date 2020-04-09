@@ -1,20 +1,20 @@
-package app.lox;
+package app.impl;
 
-import app.SheetLogger;
-import app.impl.Key;
-import app.impl.StdOutLogger;
+import app.misc.SheetLogger;
+import app.exceptions.ParseError;
+import app.misc.StdOutLogger;
 
 import java.util.List;
 
-import static app.SheetLogger.Verbosity.DEBUG;
-import static app.lox.TokenType.EOF;
-import static app.lox.TokenType.IDENTIFIER;
-import static app.lox.TokenType.LEFT_PAREN;
-import static app.lox.TokenType.MINUS;
-import static app.lox.TokenType.NUMBER;
-import static app.lox.TokenType.PLUS;
-import static app.lox.TokenType.SLASH;
-import static app.lox.TokenType.STAR;
+import static app.misc.SheetLogger.Verbosity.DEBUG;
+import static app.impl.TokenType.EOF;
+import static app.impl.TokenType.IDENTIFIER;
+import static app.impl.TokenType.LEFT_PAREN;
+import static app.impl.TokenType.MINUS;
+import static app.impl.TokenType.NUMBER;
+import static app.impl.TokenType.PLUS;
+import static app.impl.TokenType.SLASH;
+import static app.impl.TokenType.STAR;
 
 class Parser {
 
@@ -135,7 +135,7 @@ class Parser {
   }
 
   private ParseError error(Token token, String message) {
-    throw new ParseError(token, message);
+    throw new ParseError(message, token.lexeme, token.column, token.isAtEnd());
   }
 
 }

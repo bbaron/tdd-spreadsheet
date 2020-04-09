@@ -1,22 +1,19 @@
-package app;
+package app.misc;
 
 import java.util.function.Supplier;
 
-import static app.SheetLogger.Verbosity.DEBUG;
-import static app.SheetLogger.Verbosity.ERROR;
-import static app.SheetLogger.Verbosity.INFO;
-import static app.SheetLogger.Verbosity.WARN;
+import static app.misc.SheetLogger.Verbosity.DEBUG;
+import static app.misc.SheetLogger.Verbosity.ERROR;
+import static app.misc.SheetLogger.Verbosity.INFO;
+import static app.misc.SheetLogger.Verbosity.WARN;
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("unused")
 public abstract class SheetLogger {
   private final Verbosity verbosity;
 
   protected SheetLogger(Verbosity verbosity) {
     this.verbosity = verbosity;
-  }
-
-  protected SheetLogger() {
-    this(INFO);
   }
 
   public enum Verbosity {
