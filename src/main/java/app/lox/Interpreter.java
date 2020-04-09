@@ -7,12 +7,11 @@ import app.impl.StdOutLogger;
 
 import java.util.List;
 
-import static app.Helpers.stringify;
 import static app.SheetLogger.Verbosity.DEBUG;
 
 public class Interpreter implements Expr.Visitor<Object> {
   private final Environment environment;
-  private final SheetLogger logger = new StdOutLogger(DEBUG);
+  private final SheetLogger logger = new StdOutLogger(DEBUG, getClass());
 
   public Interpreter(Environment environment) {
     this.environment = environment;
@@ -22,7 +21,7 @@ public class Interpreter implements Expr.Visitor<Object> {
     try {
       Scanner scanner = new Scanner(formula);
       List<Token> tokens = scanner.scanTokens();
-      Parser parser = new Parser(tokens);
+      Parser parser = new Parser(tokens, key);
       Expr expression = parser.parse();
       Object value = evaluate(expression);
       environment.define(key, value);
@@ -34,16 +33,16 @@ public class Interpreter implements Expr.Visitor<Object> {
     }
   }
 
-  String interpret(Expr expression) {
-    String result;
-    try {
-      Object value = evaluate(expression);
-      result = stringify(value);
-    } catch (LoxError error) {
-      result = error.getMessage();
-    }
-    return result;
-  }
+//  String interpret(Expr expression) {
+//    String result;
+//    try {
+//      Object value = evaluate(expression);
+//      result = stringify(value);
+//    } catch (LoxError error) {
+//      result = error.getMessage();
+//    }
+//    return result;
+//  }
 
   private Object evaluate(Expr expr) {
     return expr.accept(this);

@@ -5,12 +5,15 @@ import app.SheetLogger;
 import java.time.LocalDateTime;
 
 public class StdOutLogger extends SheetLogger {
-  public StdOutLogger(Verbosity verbosity) {
+  private final String name;
+
+  public StdOutLogger(Verbosity verbosity, String name) {
     super(verbosity);
+    this.name = name;
   }
 
-  public StdOutLogger() {
-    this(Verbosity.INFO);
+  public StdOutLogger(Verbosity verbosity, Class<?> classs) {
+    this(verbosity, classs.getSimpleName());
   }
 
   @Override
@@ -18,7 +21,7 @@ public class StdOutLogger extends SheetLogger {
     Object formatted = message instanceof String ? String.format(message.toString(), args)
         : message == null ? "" : message;
     var now = LocalDateTime.now().toString();
-    System.out.printf("%s %-6s %s%n", now, verbosity, formatted);
+    System.out.printf("%s %-6s %-10s %s%n", now, verbosity, name, formatted);
     if (t != null) {
       t.printStackTrace(System.out);
     }

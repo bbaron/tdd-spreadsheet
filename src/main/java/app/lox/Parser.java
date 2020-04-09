@@ -1,7 +1,12 @@
 package app.lox;
 
+import app.SheetLogger;
+import app.impl.Key;
+import app.impl.StdOutLogger;
+
 import java.util.List;
 
+import static app.SheetLogger.Verbosity.DEBUG;
 import static app.lox.TokenType.EOF;
 import static app.lox.TokenType.IDENTIFIER;
 import static app.lox.TokenType.LEFT_PAREN;
@@ -14,10 +19,13 @@ import static app.lox.TokenType.STAR;
 class Parser {
 
   private final List<Token> tokens;
+  private final Key key;
   private int current = 0;
+  private final SheetLogger logger = new StdOutLogger(DEBUG, getClass());
 
-  Parser(List<Token> tokens) {
+  Parser(List<Token> tokens, Key key) {
     this.tokens = tokens;
+    this.key = key;
   }
 
   Expr parse() {
@@ -72,7 +80,9 @@ class Parser {
     }
 
     if (match(IDENTIFIER)) {
-      return new Expr.Variable(previous());
+      var variable = new Expr.Variable(previous());
+      logger.debug("%s is referencing %s", key, variable.name.key);
+      return variable;
     }
 
     if (match(LEFT_PAREN)) {
