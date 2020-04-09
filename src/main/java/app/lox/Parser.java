@@ -8,7 +8,6 @@ import static app.lox.TokenType.LEFT_PAREN;
 import static app.lox.TokenType.MINUS;
 import static app.lox.TokenType.NUMBER;
 import static app.lox.TokenType.PLUS;
-import static app.lox.TokenType.RIGHT_PAREN;
 import static app.lox.TokenType.SLASH;
 import static app.lox.TokenType.STAR;
 
@@ -78,7 +77,7 @@ class Parser {
 
     if (match(LEFT_PAREN)) {
       Expr expr = expression();
-      consume(RIGHT_PAREN, "Expect ')' after expression.");
+      consumeEndOfGroup();
       return new Expr.Grouping(expr);
     }
     throw error(peek(), "Expect expression.");
@@ -95,10 +94,13 @@ class Parser {
     return false;
   }
 
-  private Token consume(TokenType type, String message) {
-    if (check(type)) return advance();
+  private void consumeEndOfGroup() {
+    if (check(TokenType.RIGHT_PAREN)) {
+      advance();
+      return;
+    }
 
-    throw error(peek(), message);
+    throw error(peek(), "Expect ')' after expression.");
   }
 
   private boolean check(TokenType type) {
@@ -106,9 +108,8 @@ class Parser {
     return peek().type == type;
   }
 
-  private Token advance() {
+  private void advance() {
     if (!isAtEnd()) current++;
-    return previous();
   }
 
   private boolean isAtEnd() {
@@ -127,25 +128,4 @@ class Parser {
     throw new ParseError(token, message);
   }
 
-  private void synchronize() {
-    advance();
-
-    while (!isAtEnd()) {
-//      if (previous().type == SEMICOLON) return;
-//
-//      switch (peek().type) {
-//        case CLASS:
-//        case FUN:
-//        case VAR:
-//        case FOR:
-//        case IF:
-//        case WHILE:
-//        case PRINT:
-//        case RETURN:
-//          return;
-//      }
-//
-      advance();
-    }
-  }
 }
