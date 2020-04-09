@@ -3,7 +3,11 @@ package app.impl;
 import app.misc.SheetLogger;
 import app.misc.StdOutLogger;
 
+import java.util.ArrayDeque;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Queue;
+import java.util.Set;
 
 import static app.misc.Helpers.nullToEmpty;
 import static app.misc.Helpers.stringify;
@@ -49,21 +53,27 @@ class Grid {
     }
 
     Expr expr = interpreter.interpret(key, formula);
-    var dependsOn = references.getDependsOn(key);
-    var referencedBy = references.getReferencedBy(key);
-    if (!dependsOn.isEmpty()) {
-      logger.debug("key: %s dependsOn: %s", key, dependsOn);
-    }
-    if (!referencedBy.isEmpty()) {
-      logger.debug("key %s is referenced by %s", key, referencedBy);
-      for (Key k : referencedBy) {
-        Cell c = cells.get(k);
-        Object result = interpreter.evaluate(c.expr);
-        logger.debug("%s is re-evaluated to %s", k, result);
-        environment.define(k, result);
+//    var dependsOn = references.getDependsOn(key);
+    recalculate(key);
+    return new Cell(key, literal, expr);
+  }
+
+  private void recalculate(final Key key) {
+    Set<Key> marked = new HashSet<>();
+    Queue<Key> queue = new ArrayDeque<>(references.getReferencedBy(key));
+    while (!queue.isEmpty()) {
+      Key v = queue.remove();
+      marked.add(v);
+      Cell c = cells.get(v);
+      Object result = interpreter.evaluate(c.expr);
+      logger.debug("%s is re-evaluated to %s", v, result);
+      environment.define(v, result);
+      for (Key w : references.getReferencedBy(v)) {
+        if (!marked.contains(w)) {
+          queue.add(w);
+        }
       }
     }
-    return new Cell(key, literal, expr);
   }
 
   private static Integer tryInteger(String literal) {

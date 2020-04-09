@@ -2,7 +2,6 @@ package app;
 
 import app.exceptions.SheetError;
 import app.impl.SheetImpl;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -191,11 +190,31 @@ class SheetTest {
   }
 
   @Test
-//  @Disabled
   void formulasRecalculate() {
     sheet.put("A2", "3");
     sheet.put("B1", "=A2");
     sheet.put("A2", "6");
     assertEquals("6", sheet.get("B1"), "re-calculation");
   }
+
+  @Test
+  void deepPropagationWorks() {
+    sheet.put("A1", "8");
+    sheet.put("A2", "=A1");
+    sheet.put("A3", "=A2");
+    sheet.put("A4", "=A3");
+    assertEquals("8", sheet.get("A4"), "deep propagation");
+  }
+
+  @Test
+  void deepRecalculationWorks() {
+    sheet.put("A1", "8");
+    sheet.put("A2", "=A1");
+    sheet.put("A3", "=A2");
+    sheet.put("A4", "=A3");
+
+    sheet.put("A2", "6");
+    assertEquals("6", sheet.get("A4"), "deep re-calculation");
+  }
+
 }
