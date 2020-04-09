@@ -13,7 +13,8 @@ import java.nio.file.Paths;
 public class Lox {
   static boolean hadError = false;
   static boolean hadRuntimeError = false;
-  private static final Interpreter interpreter = new Interpreter(new Environment());
+  private static final Environment environment = new Environment();
+  private static final Interpreter interpreter = new Interpreter(environment);
 
   public static void main(String[] args) throws IOException {
     if (args.length > 1) {
@@ -54,9 +55,9 @@ public class Lox {
 //    // Stop if there was a syntax error.
 //    if (hadError) return;
 
-    String result = interpreter.interpret(Key.of("A1"), source);
+    interpreter.interpret(Key.of("A1"), source);
 //    String expr = AstPrinter.printExpr(expression);
-    System.out.printf("%s%n", result);
+    System.out.printf("%s%n", environment.getOrDefault(Key.of("A1"), ""));
   }
 
   static void unexpectedChar(int column) {

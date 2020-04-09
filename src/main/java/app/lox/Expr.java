@@ -1,6 +1,8 @@
 package app.lox;
 
-abstract class Expr {
+import app.impl.Key;
+
+public abstract class Expr {
   interface Visitor<R> {
     R visitBinaryExpr(Binary expr);
 
@@ -85,4 +87,9 @@ abstract class Expr {
   }
 
   abstract <R> R accept(Visitor<R> visitor);
+
+  public static Expr.Variable variable(Key key) {
+    Token token = new Token(TokenType.IDENTIFIER, key.getValue(), null, 1, key );
+    return new Expr.Variable(token);
+  }
 }

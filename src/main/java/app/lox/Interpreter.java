@@ -7,6 +7,7 @@ import app.impl.StdOutLogger;
 
 import java.util.List;
 
+import static app.Helpers.stringify;
 import static app.SheetLogger.Verbosity.DEBUG;
 
 public class Interpreter implements Expr.Visitor<Object> {
@@ -17,7 +18,7 @@ public class Interpreter implements Expr.Visitor<Object> {
     this.environment = environment;
   }
 
-  public String interpret(Key key, String formula) {
+  public Expr interpret(Key key, String formula) {
     try {
       Scanner scanner = new Scanner(formula);
       List<Token> tokens = scanner.scanTokens();
@@ -25,10 +26,11 @@ public class Interpreter implements Expr.Visitor<Object> {
       Expr expression = parser.parse();
       Object value = evaluate(expression);
       environment.define(key, value);
-      return stringify(value);
+      return expression;
     } catch (SheetError e) {
       logger.debug(e, "error in interpret");
-      return "#Error";
+      environment.define(key, "#Error");
+      return null;
     }
   }
 
@@ -93,7 +95,7 @@ public class Interpreter implements Expr.Visitor<Object> {
 
   @Override
   public Object visitVariableExpr(Expr.Variable expr) {
-    return environment.get(expr.name);
+    return environment.getOrDefault(expr.name.key, 0.0);
   }
 
   private void checkNumberOperand(Token operator, Object operand) {
@@ -104,26 +106,6 @@ public class Interpreter implements Expr.Visitor<Object> {
   private void checkNumberOperands(Token operator, Object left, Object right) {
     if (left instanceof Double && right instanceof Double) return;
     throw new RuntimeError(operator, "Operands must be numbers.");
-  }
-
-  private String stringify(Object object) {
-    if (object == null) return "";
-
-    // Hack. Work around Java adding ".0" to integer-valued doubles.
-    if (object instanceof Double) {
-      String text = String.format("%.4f", object);
-      int end = text.length() - 1;
-      while (text.charAt(end) != '.') {
-        if (text.charAt(end) != '0') break;
-        end--;
-      }
-      text = text.substring(0, end + 1);
-      if (text.charAt(text.length() - 1) == '.')
-        text = text.substring(0, text.length() - 1);
-      return text;
-    }
-
-    return object.toString();
   }
 
 }

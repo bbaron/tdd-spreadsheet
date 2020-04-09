@@ -1,5 +1,7 @@
 package app.impl;
 
+import app.lox.Expr;
+
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -10,16 +12,17 @@ class Cell {
   static final String DEFAULT_VALUE = "";
 
   final Key key;
-  final String literal, value;
+  final String literal;
+  final Expr expr;
 
-  Cell(Key key, String literal, String value) {
+  Cell(Key key, String literal, Expr expr) {
     this.key = key;
     this.literal = literal;
-    this.value = value;
+    this.expr = expr;
   }
 
   private Cell(Key key) {
-    this(key, DEFAULT_LITERAL, DEFAULT_VALUE);
+    this(key, DEFAULT_LITERAL, Expr.variable(key));
   }
 
   @Override
@@ -37,7 +40,7 @@ class Cell {
 
   @Override
   public String toString() {
-    return String.format("Cell(key = '%s', literal = '%s', value = '%s')", key, literal, value);
+    return String.format("Cell(key = '%s', literal = '%s')", key, literal);
   }
 
   static Cell empty(Key key) {

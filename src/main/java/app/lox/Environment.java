@@ -12,7 +12,7 @@ public class Environment {
     values.put(name, value);
   }
 
-  public Object get(Token name) {
-    return values.computeIfAbsent(name.key, k -> 0.0);
+  public Object getOrDefault(Key key, Object defaultValue) {
+    return values.getOrDefault(key, defaultValue);
   }
 }

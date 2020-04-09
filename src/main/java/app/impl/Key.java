@@ -45,6 +45,10 @@ public class Key {
     return this.value.equals(that.value);
   }
 
+  public String getValue() {
+    return value;
+  }
+
   @Override
   public String toString() {
     return String.format("key[%s]", value);

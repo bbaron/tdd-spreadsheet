@@ -40,9 +40,10 @@ class SheetTest {
   void textCellsAreStored() {
     String theKey = "A21";
     Stream<Executable> es = Stream.of("A string", "A different string", "")
-        .map(s -> () -> {
-          sheet.put(theKey, s);
-          assertEquals(s, sheet.get(theKey));
+        .map(expected -> () -> {
+          sheet.put(theKey, expected);
+          var actual = sheet.get(theKey);
+          assertEquals(expected, actual);
         });
     assertAll(es);
   }

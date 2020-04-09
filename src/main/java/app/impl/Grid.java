@@ -1,9 +1,13 @@
 package app.impl;
 
 import app.lox.Environment;
+import app.lox.Expr;
 import app.lox.Interpreter;
 
 import java.util.LinkedHashMap;
+
+import static app.Helpers.nullToEmpty;
+import static app.Helpers.stringify;
 
 class Grid {
   private final LinkedHashMap<Key, Cell> cells = new LinkedHashMap<>();
@@ -11,7 +15,7 @@ class Grid {
   private final Interpreter interpreter = new Interpreter(environment);
 
   String get(String key) {
-    return getCell(key).value;
+    return stringify(environment.getOrDefault(Key.of(key), ""));
   }
 
   void put(String key, String literal) {
@@ -29,21 +33,22 @@ class Grid {
   }
 
   private Cell parse(Key key, String literal) {
-    if (literal == null || literal.isEmpty()) return Cell.empty(key);
+    literal = nullToEmpty(literal);
     String formula = literal;
     Object value = tryInteger(literal);
     if (value != null) {
       environment.define(key, value);
-    } else if (literal.charAt(0) != '=') {
-      return new Cell(key, literal, literal);
+    } else if (!literal.startsWith("=")) {
+      environment.define(key, literal);
+      return new Cell(key, literal, Expr.variable(key));
     }
 
-    if (formula.charAt(0) == '=' && formula.length() > 1) {
+    if (literal.startsWith("=")) {
       formula = formula.substring(1);
     }
 
-    String result = interpreter.interpret(key, formula);
-    return new Cell(key, literal, result);
+    Expr expr = interpreter.interpret(key, formula);
+    return new Cell(key, literal, expr);
   }
 
   private static Integer tryInteger(String literal) {
