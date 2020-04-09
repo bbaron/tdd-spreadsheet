@@ -1,5 +1,6 @@
 package app.impl;
 
+import app.exceptions.CircularityError;
 import app.exceptions.RuntimeError;
 import app.exceptions.SheetError;
 import app.misc.SheetLogger;
@@ -30,7 +31,8 @@ class Interpreter implements Expr.Visitor<Object> {
       return expression;
     } catch (SheetError e) {
       logger.debug(e, "error in interpret");
-      environment.define(key, "#Error");
+      var message = e instanceof CircularityError ? "#Circular" : "#Error";
+      environment.define(key, message);
       return null;
     }
   }

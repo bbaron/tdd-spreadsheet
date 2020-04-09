@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class SheetTest {
@@ -243,5 +244,27 @@ class SheetTest {
 
     assertEquals("34", sheet.get("A4"), "multiple expressions - A4");
     assertEquals("51", sheet.get("B4"), "multiple expressions - B4");
+  }
+
+  @Test
+  void circularReferenceDoesntCrash() {
+    sheet.put("A1", "=A1");
+    assertTrue(true);
+  }
+
+  @Test
+  void circularReferenceAdmitIt() {
+    sheet.put("A1", "=A1");
+    assertEquals("#Circular", sheet.get("A1"));
+  }
+
+  @Test
+  void deepCircularity() {
+    sheet.put("A1", "=A2");
+    sheet.put("A2", "=A3");
+    sheet.put("A3", "=A4");
+    sheet.put("A4", "=A5");
+    sheet.put("A5", "=A1");
+    assertEquals("#Circular", sheet.get("A5"));
   }
 }

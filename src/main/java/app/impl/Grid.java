@@ -33,8 +33,11 @@ class Grid {
   }
 
   private Cell getCell(String key) {
-    Key k = Key.of(key);
-    return cells.getOrDefault(k, Cell.empty(k));
+    return getCell(Key.of(key));
+  }
+
+  private Cell getCell(Key key) {
+    return cells.getOrDefault(key, Cell.empty(key));
   }
 
   private Cell parse(Key key, String literal) {
@@ -64,10 +67,18 @@ class Grid {
     while (!queue.isEmpty()) {
       Key v = queue.remove();
       marked.add(v);
-      Cell c = cells.get(v);
-      Object result = interpreter.evaluate(c.expr);
-      logger.debug("%s is re-evaluated to %s", v, result);
-      environment.define(v, result);
+      Cell c = getCell(v);
+      if (c != null) {
+        if (c.expr != null) {
+          Object result = interpreter.evaluate(c.expr);
+          logger.debug("%s is re-evaluated to %s", v, result);
+          environment.define(v, result);
+        } else {
+          logger.debug("%s does not have an expr", key);
+        }
+      } else {
+        logger.debug("%s does not have a cell", key);
+      }
       for (Key w : references.getReferencedBy(v)) {
         if (!marked.contains(w)) {
           queue.add(w);
