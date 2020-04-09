@@ -215,6 +215,33 @@ class SheetTest {
 
     sheet.put("A2", "6");
     assertEquals("6", sheet.get("A4"), "deep re-calculation");
+
+    sheet.put("B1", "0");
+    assertEquals("0", sheet.get("B1"));
+    sheet.put("B1", "=C1+C2+C3+C4");
+    sheet.put("C2", "=C1");
+    sheet.put("C1", "9");
+    sheet.put("C3", "=C2");
+    sheet.put("C4", "=C3");
+    assertEquals("9", sheet.get("C1"));
+    assertEquals("9", sheet.get("C2"));
+    assertEquals("9", sheet.get("C3"));
+    assertEquals("9", sheet.get("C4"));
+    assertEquals("36", sheet.get("B1"));
   }
 
+  @Test
+  void formulaWorksWithManyCells() {
+    sheet.put("A1", "10");
+    sheet.put("A2", "=A1+B1");
+    sheet.put("A3", "=A2+B2");
+    sheet.put("A4", "=A3");
+    sheet.put("B1", "7");
+    sheet.put("B2", "=A2");
+    sheet.put("B3", "=A3-A2");
+    sheet.put("B4", "=A4+B3");
+
+    assertEquals("34", sheet.get("A4"), "multiple expressions - A4");
+    assertEquals("51", sheet.get("B4"), "multiple expressions - B4");
+  }
 }
