@@ -22,10 +22,12 @@ class Parser {
   private final Key key;
   private int current = 0;
   private final SheetLogger logger = new StdOutLogger(DEBUG, getClass());
+  private final References references;
 
-  Parser(List<Token> tokens, Key key) {
+  Parser(List<Token> tokens, Key key, References references) {
     this.tokens = tokens;
     this.key = key;
+    this.references = references;
   }
 
   Expr parse() {
@@ -82,6 +84,7 @@ class Parser {
     if (match(IDENTIFIER)) {
       var variable = new Expr.Variable(previous());
       logger.debug("%s is referencing %s", key, variable.name.key);
+      references.addDependsOn(key, variable.name.key);
       return variable;
     }
 

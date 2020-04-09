@@ -14,7 +14,8 @@ public class Lox {
   static boolean hadError = false;
   static boolean hadRuntimeError = false;
   private static final Environment environment = new Environment();
-  private static final Interpreter interpreter = new Interpreter(environment);
+  private static final References references = new References();
+  private static final Interpreter interpreter = new Interpreter(environment, references);
 
   public static void main(String[] args) throws IOException {
     if (args.length > 1) {

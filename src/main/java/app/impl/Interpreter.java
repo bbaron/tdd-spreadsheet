@@ -11,17 +11,19 @@ import static app.misc.SheetLogger.Verbosity.DEBUG;
 
 class Interpreter implements Expr.Visitor<Object> {
   private final Environment environment;
+  private final References references;
   private final SheetLogger logger = new StdOutLogger(DEBUG, getClass());
 
-  Interpreter(Environment environment) {
+  Interpreter(Environment environment, References references) {
     this.environment = environment;
+    this.references = references;
   }
 
   Expr interpret(Key key, String formula) {
     try {
       Scanner scanner = new Scanner(formula);
       List<Token> tokens = scanner.scanTokens();
-      Parser parser = new Parser(tokens, key);
+      Parser parser = new Parser(tokens, key, references);
       Expr expression = parser.parse();
       Object value = evaluate(expression);
       environment.define(key, value);
@@ -33,18 +35,7 @@ class Interpreter implements Expr.Visitor<Object> {
     }
   }
 
-//  String interpret(Expr expression) {
-//    String result;
-//    try {
-//      Object value = evaluate(expression);
-//      result = stringify(value);
-//    } catch (LoxError error) {
-//      result = error.getMessage();
-//    }
-//    return result;
-//  }
-
-  private Object evaluate(Expr expr) {
+  Object evaluate(Expr expr) {
     return expr.accept(this);
   }
 

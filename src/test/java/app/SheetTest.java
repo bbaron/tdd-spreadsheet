@@ -191,7 +191,7 @@ class SheetTest {
   }
 
   @Test
-  @Disabled
+//  @Disabled
   void formulasRecalculate() {
     sheet.put("A2", "3");
     sheet.put("B1", "=A2");
