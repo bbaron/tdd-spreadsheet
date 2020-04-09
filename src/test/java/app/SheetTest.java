@@ -9,6 +9,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -16,9 +18,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class SheetTest {
   private final Sheet sheet = new SheetImpl();
+  private final SheetTableModel table = new SheetTableModel(sheet);
+  private static final int LAST_COLUMN_INDEX = 49;
+  private static final int LAST_ROW_INDEX = 99;
+  private final TableModelListener tableModelListener = mock(TableModelListener.class);
 
   @Test
   void cellsAreEmptyByDefault() {
@@ -266,5 +275,135 @@ class SheetTest {
     sheet.put("A4", "=A5");
     sheet.put("A5", "=A1");
     assertEquals("#Circular", sheet.get("A5"));
+  }
+
+  @Test
+  void tableModelRequiredOverrides() {
+    assertAll(
+        () -> assertTrue(table.getColumnCount() > LAST_COLUMN_INDEX),
+        () -> assertTrue(table.getRowCount() > LAST_ROW_INDEX),
+        () -> assertEquals("", table.getValueAt(10, 10)));
+  }
+
+  @Test
+  void columnNames() {
+    assertAll(
+        () -> assertEquals("", table.getColumnName(0)),
+        () -> assertEquals("A", table.getColumnName(1)),
+        () -> assertEquals("Z", table.getColumnName(26)),
+        () -> assertEquals("AW", table.getColumnName(LAST_COLUMN_INDEX)));
+  }
+
+  @Test
+  void column0ContainsIndex() {
+    assertAll(
+        () -> assertEquals("1", table.getValueAt(0, 0)),
+        () -> assertEquals("50", table.getValueAt(49, 0)),
+        () -> assertEquals("100", table.getValueAt(LAST_ROW_INDEX, 0)));
+  }
+
+  @Test
+  void mainColumnsHaveContents() {
+    sheet.put("A1", "upper left");
+    sheet.put("A100", "lower left");
+    sheet.put("AW1", "upper right");
+    sheet.put("AW100", "lower right");
+
+    assertAll(
+        () -> assertEquals("upper left", table.getValueAt(0, 1)),
+        () -> assertEquals("lower left", table.getValueAt(LAST_ROW_INDEX, 1)),
+        () -> assertEquals("upper right", table.getValueAt(0, LAST_COLUMN_INDEX)),
+        () -> assertEquals("lower right", table.getValueAt(LAST_ROW_INDEX, LAST_COLUMN_INDEX)));
+  }
+
+  @Test
+  void storesWorkThroughTableModel() {
+    assertAll(
+        () -> assertAll(() -> {
+          table.setValueAt("21", 0, 1);
+          table.setValueAt("=A1", 1, 1);
+          assertAll(
+              () -> assertEquals("21", table.getValueAt(0, 1)),
+              () -> assertEquals("21", table.getValueAt(1, 1)));
+        }),
+        () -> assertAll(() -> {
+          table.setValueAt("22", 0, 1);
+          assertAll(
+              () -> assertEquals("22", table.getValueAt(0, 1)),
+              () -> assertEquals("22", table.getValueAt(1, 1)));
+        }));
+  }
+
+  @Test
+  void column0isReadOnly() {
+    assertThrowsIAE(() -> table.setValueAt("", 1, 0));
+  }
+
+  @Test
+  void rowColBoundsChecked() {
+    assertAll(
+        assertThrowsIAE(() -> table.setValueAt("", -1, 1)),
+        assertThrowsIAE(() -> table.setValueAt("", LAST_ROW_INDEX + 1, 1)),
+        assertThrowsIAE(() -> table.setValueAt("", 0, -1)),
+        assertThrowsIAE(() -> table.setValueAt("", 0, LAST_COLUMN_INDEX + 1)),
+        assertThrowsIAE(() -> table.getValueAt(-1, 1)),
+        assertThrowsIAE(() -> table.getValueAt(LAST_ROW_INDEX + 1, 1)),
+        assertThrowsIAE(() -> table.getValueAt(0, -1)),
+        assertThrowsIAE(() -> table.getValueAt(0, LAST_COLUMN_INDEX + 1))
+    );
+  }
+
+  private Executable assertThrowsIAE(Executable e) {
+    return () -> assertThrows(IllegalArgumentException.class, e);
+  }
+
+  /*
+   * We've established that the table model can get and set values.
+   * But JTable uses an event notification mechanism to find out
+   * about the changes.
+   *
+   * To test this, we'll introduce a test helper class. It's a very
+   * simple listener, and will assure us that notifications are
+   * sent when changes are made.
+   *
+   * There's a couple of design decisions implicit here. One is that
+   * we won't attempt to be specific about which cells change; we'll
+   * just say that the table data has changed and let JTable refresh
+   * its view of whichever cells it wants. (Because of cell dependencies,
+   * changes in one cell could potentially no others, all others,
+   * or anything in between.) We might revisit this decision during
+   * performance tuning, and try to issue finer-grained notifications.
+   *
+   * The other decision is that we have no mechanism for our Sheet
+   * to tell the table model about changes. So changes will either need
+   * to come in through the table model, or we'll have to add some
+   * notification mechanism to Sheet. For now, just make changes through the table model.
+   */
+
+  @Test
+  void tableModelNotifies() {
+//    TestTableModelListener listener = new TestTableModelListener();
+    table.addTableModelListener(tableModelListener);
+//    assertFalse(listener.wasNotified);
+    table.setValueAt("22", 0, 1);
+//    assertTrue(listener.wasNotified);
+    verify(tableModelListener).tableChanged(any(TableModelEvent.class));
+  }
+  /*
+   * Note the cast in our test here. Previous tests have been straight
+   * implementations of TableModel functions; now we're saying that
+   * our model has some extra functions. We'll face a small tradeoff later
+   * when we want access to the feature: if we get the model back from JTable,
+   * we'll have to cast it; if we don't want to cast it we'll have to
+   * track it somewhere.
+   *
+   */
+
+  @Test
+  void sheetTableModelCanGetLiteral() {
+    sheet.put("A1", "=7");
+    String contents = table.getLiteralValueAt(0, 1);
+
+    assertEquals("=7", contents);
   }
 }
