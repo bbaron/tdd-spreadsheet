@@ -24,8 +24,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 class SheetTest {
-//  private final Sheet sheet = new SheetImpl();
-  private final Sheet sheet = new zip.Sheet();
+  private final Sheet sheet = new SheetImpl();
+//  private final Sheet sheet = new zip.Sheet();
   private final SheetTableModel table = new SheetTableModel(sheet);
   private final SheetTableModel model = new SheetTableModel(sheet);
 
