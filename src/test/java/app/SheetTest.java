@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.util.StopWatch;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -23,8 +24,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 class SheetTest {
-  private final Sheet sheet = new SheetImpl();
+//  private final Sheet sheet = new SheetImpl();
+  private final Sheet sheet = new zip.Sheet();
   private final SheetTableModel table = new SheetTableModel(sheet);
+  private final SheetTableModel model = new SheetTableModel(sheet);
+
+
   private static final int LAST_COLUMN_INDEX = 49;
   private static final int LAST_ROW_INDEX = 99;
   private final TableModelListener tableModelListener = mock(TableModelListener.class);
@@ -353,6 +358,27 @@ class SheetTest {
     );
   }
 
+  @Test
+  void stressTest() {
+    StopWatch watch = new StopWatch("stress test");
+    sheet.put("A1", "1");
+    for (int i = 1; i < 100; i++) {
+      String key = "A" + (i + 1);
+      String ref = "A" + i;
+      String literal = String.format("=(%s+%s-%s+%s-%s+%s-%s+%s)*(%s/100)",
+          ref, ref, ref, ref, ref, ref, ref, ref, ref);
+      watch.start(key);
+      sheet.put(key, literal);
+      System.out.println(key + " = " + sheet.get(key));
+      watch.stop();
+//      System.out.println(watch.prettyPrint());
+    }
+    watch.start("update A1");
+    sheet.put("A1", "2");
+    watch.stop();
+    System.out.println(watch.prettyPrint());
+  }
+
   private Executable assertThrowsIAE(Executable e) {
     return () -> assertThrows(IllegalArgumentException.class, e);
   }
@@ -382,11 +408,8 @@ class SheetTest {
 
   @Test
   void tableModelNotifies() {
-//    TestTableModelListener listener = new TestTableModelListener();
     table.addTableModelListener(tableModelListener);
-//    assertFalse(listener.wasNotified);
     table.setValueAt("22", 0, 1);
-//    assertTrue(listener.wasNotified);
     verify(tableModelListener).tableChanged(any(TableModelEvent.class));
   }
   /*

@@ -7,13 +7,13 @@ import javax.swing.table.AbstractTableModel;
 
 import static app.misc.SheetLogger.Verbosity.DEBUG;
 
-public class SheetTableModel extends AbstractTableModel {
+class SheetTableModel extends AbstractTableModel {
   private static final int COL_COUNT = 50;
   private static final int ROW_COUNT = 100;
   private final Sheet sheet;
   private final SheetLogger logger = new StdOutLogger(DEBUG, getClass());
 
-  public SheetTableModel(Sheet sheet) {
+  SheetTableModel(Sheet sheet) {
     this.sheet = sheet;
   }
 
@@ -35,7 +35,7 @@ public class SheetTableModel extends AbstractTableModel {
     return sheet.get(key);
   }
 
-  public String getLiteralValueAt(int rowIndex, int columnIndex) {
+  String getLiteralValueAt(int rowIndex, int columnIndex) {
     rowColCheck(rowIndex, columnIndex);
     String key = makeKey(rowIndex, columnIndex);
     return sheet.getLiteral(key);
