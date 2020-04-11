@@ -25,6 +25,7 @@ class Grid {
 
   void put(String key, String literal) {
     Key k = Key.of(key);
+    references.clearReferences(k);
     cells.put(k, parse(k, literal));
   }
 

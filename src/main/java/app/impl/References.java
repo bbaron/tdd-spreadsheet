@@ -31,6 +31,13 @@ class References {
     return Set.copyOf(referencedByMap.getOrDefault(key, Set.of()));
   }
 
+  void clearReferences(Key key) {
+    referencedByMap.values().forEach(set -> set.remove(key));
+    if (dependsOnMap.containsKey(key)) {
+      dependsOnMap.get(key).clear();
+    }
+
+  }
   private void checkForCircularity(Key dependent, Key dependsOn) {
     Set<Key> marked = new HashSet<>();
     Queue<Key> q = new ArrayDeque<>(getDependsOn(dependsOn));

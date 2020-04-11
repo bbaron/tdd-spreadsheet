@@ -221,6 +221,15 @@ class SheetTest {
   }
 
   @Test
+  void refsAreCleared() {
+    sheet.put("A1", "1");
+    sheet.put("A2", "=A1");
+    sheet.put("A2", "");
+    sheet.put("A1", "2");
+    assertEquals("", sheet.get("A2"));
+  }
+
+  @Test
   void deepRecalculationWorks() {
     sheet.put("A1", "8");
     sheet.put("A2", "=A1");
