@@ -1,15 +1,17 @@
 package app;
 
+import app.misc.Helpers;
 import app.misc.SheetLogger;
 import app.misc.StdOutLogger;
 
 import javax.swing.table.AbstractTableModel;
 
+import static app.misc.Helpers.getSpreadsheetColumnName;
 import static app.misc.SheetLogger.Verbosity.DEBUG;
 
 class SheetTableModel extends AbstractTableModel {
-  private static final int COL_COUNT = 50;
-  private static final int ROW_COUNT = 100;
+  static final int COL_COUNT = 25;
+  static final int ROW_COUNT = 50;
   private final Sheet sheet;
   private final SheetLogger logger = new StdOutLogger(DEBUG, getClass());
 
@@ -54,7 +56,7 @@ class SheetTableModel extends AbstractTableModel {
 
   @Override
   public String getColumnName(int column) {
-    return column == 0 ? "" : super.getColumnName(column - 1);
+    return getSpreadsheetColumnName(column);
   }
 
   private String makeKey(int rowIndex, int columnIndex) {

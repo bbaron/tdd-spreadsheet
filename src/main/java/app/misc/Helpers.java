@@ -29,4 +29,24 @@ public final class Helpers {
     return s == null ? "" : s;
   }
 
+  /**
+   * Returns a default name for the column using spreadsheet conventions:
+   * column 0 is empty, 1=A, 2=B, 3=C, ... 26=Z, 27=AA, 28=AB, etc.
+   *
+   * @param column the column [0, 100] being queried
+   * @return a string containing the default name of <code>column</code>
+   * @throws IllegalArgumentException If {@code column} cannot be found.
+   */
+  public static String getSpreadsheetColumnName(int column) {
+    if (column < 0 || column > 100) throw new IllegalArgumentException(column + ": no such column");
+    if (column == 0) return "";
+    column--;
+    StringBuilder result = new StringBuilder();
+    for (; column >= 0; column = column / 26 - 1) {
+      char colChar = (char) ((char) (column % 26) + 'A');
+      result.insert(0, colChar);
+    }
+    return result.toString();
+  }
+
 }

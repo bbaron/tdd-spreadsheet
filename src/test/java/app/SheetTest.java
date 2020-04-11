@@ -25,13 +25,12 @@ import static org.mockito.Mockito.verify;
 
 class SheetTest {
   private final Sheet sheet = new SheetImpl();
-//  private final Sheet sheet = new zip.Sheet();
   private final SheetTableModel table = new SheetTableModel(sheet);
   private final SheetTableModel model = new SheetTableModel(sheet);
 
 
-  private static final int LAST_COLUMN_INDEX = 49;
-  private static final int LAST_ROW_INDEX = 99;
+  private static final int LAST_COLUMN_INDEX = SheetTableModel.COL_COUNT - 1;
+  private static final int LAST_ROW_INDEX = SheetTableModel.ROW_COUNT - 1;
   private final TableModelListener tableModelListener = mock(TableModelListener.class);
 
   @Test
@@ -296,23 +295,23 @@ class SheetTest {
         () -> assertEquals("", table.getColumnName(0)),
         () -> assertEquals("A", table.getColumnName(1)),
         () -> assertEquals("Z", table.getColumnName(26)),
-        () -> assertEquals("AW", table.getColumnName(LAST_COLUMN_INDEX)));
+        () -> assertEquals("X", table.getColumnName(LAST_COLUMN_INDEX)));
   }
 
   @Test
   void column0ContainsIndex() {
     assertAll(
         () -> assertEquals("1", table.getValueAt(0, 0)),
-        () -> assertEquals("50", table.getValueAt(49, 0)),
-        () -> assertEquals("100", table.getValueAt(LAST_ROW_INDEX, 0)));
+        () -> assertEquals("25", table.getValueAt(24, 0)),
+        () -> assertEquals("50", table.getValueAt(LAST_ROW_INDEX, 0)));
   }
 
   @Test
   void mainColumnsHaveContents() {
     sheet.put("A1", "upper left");
-    sheet.put("A100", "lower left");
-    sheet.put("AW1", "upper right");
-    sheet.put("AW100", "lower right");
+    sheet.put("A50", "lower left");
+    sheet.put("X1", "upper right");
+    sheet.put("X50", "lower right");
 
     assertAll(
         () -> assertEquals("upper left", table.getValueAt(0, 1)),
@@ -429,4 +428,5 @@ class SheetTest {
 
     assertEquals("=7", contents);
   }
+
 }

@@ -2,7 +2,10 @@ package app.swing;/*
  * SimpleTableDemo.java requires no other files.
  */
 
+import app.misc.Helpers;
+
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -17,9 +20,39 @@ public class SimpleTableDemo extends JPanel {
   public SimpleTableDemo() {
     super(new GridLayout(1, 0));
 
-    final JTable table = new JTable(DATA, COLUMN_NAMES);
-    table.setPreferredScrollableViewportSize(new Dimension(500, 70));
-    table.setFillsViewportHeight(true);
+//    final JTable table = new JTable(DATA, COLUMN_NAMES);
+    final JTable table = new JTable(new AbstractTableModel() {
+      @Override
+      public int getRowCount() {
+        return DATA.length;
+      }
+
+      @Override
+      public int getColumnCount() {
+        return DATA[0].length;
+      }
+
+      @Override
+      public Object getValueAt(int rowIndex, int columnIndex) {
+        if (columnIndex == 0) return (rowIndex + 1) + "";
+        return DATA[rowIndex][columnIndex];
+      }
+
+      @Override
+      public String getColumnName(int column) {
+        return Helpers.getSpreadsheetColumnName(column);
+      }
+    });
+//    var model = table.getModel();
+//    for (int i = 0; i < DATA.length; i++) {
+//      var row = DATA[i];
+//      for (int j = 0; j < row.length; j++) {
+//        model.setValueAt(row[j], i, j);
+//      }
+//    }
+
+//    table.setPreferredScrollableViewportSize(new Dimension(500, 140));
+//    table.setFillsViewportHeight(true);
 
     table.addMouseListener((MouseClicker) e -> printDebugData(table));
 
@@ -27,7 +60,7 @@ public class SimpleTableDemo extends JPanel {
     JScrollPane scrollPane = new JScrollPane(table);
 
     //Add the scroll pane to this panel.
-    add(scrollPane);
+    add(table);
   }
 
   private void printDebugData(JTable table) {
