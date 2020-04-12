@@ -49,4 +49,44 @@ public final class Helpers {
     return result.toString();
   }
 
+  public static int getSpreadsheetColumnIndex(char column) {
+    return Character.toUpperCase(column) - 'A' + 1;
+  }
+
+  public static int getSpreadsheetColumnIndex(String column) {
+    if (column.isEmpty()) return 0;
+    int result = 0;
+    int len = column.length();
+    var chars = reverse(column).toCharArray();
+    for (int i = 0; i < len; i++) {
+      int c = getSpreadsheetColumnIndex(chars[i]);
+      result += c * Math.pow(26, i);
+    }
+    return result;
+  }
+
+  public static void main(String[] args) {
+    String[] cols = {"", "A", "B", "C", "Y", "Z"
+        , "AA", "AB", "AZ", "BA"
+    };
+//    char[] cols = "ABCDWXYZ".toCharArray();
+    for (var col : cols) {
+      int index = getSpreadsheetColumnIndex(col);
+      System.out.printf("%s=%s,%s%n", col, getSpreadsheetColumnIndex(col), getSpreadsheetColumnName(index));
+    }
+//    System.out.println(getSpreadsheetColumnName(52));
+//    System.out.println(getSpreadsheetColumnName(53));
+//    System.out.println(getSpreadsheetColumnName(54));
+//    System.out.println(getSpreadsheetColumnName(55));
+  }
+
+  private static String reverse(String start) {
+    StringBuilder s = new StringBuilder();
+    for (int i = 0; i < start.length(); i++) {
+      s.insert(0, start.charAt(i));
+    }
+    return s.toString();
+
+  }
+
 }
