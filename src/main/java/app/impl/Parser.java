@@ -4,8 +4,11 @@ import app.misc.SheetLogger;
 import app.exceptions.ParseError;
 import app.misc.StdOutLogger;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static app.impl.TokenType.COMMA;
+import static app.impl.TokenType.RIGHT_PAREN;
 import static app.misc.SheetLogger.Verbosity.DEBUG;
 import static app.impl.TokenType.EOF;
 import static app.impl.TokenType.IDENTIFIER;
@@ -73,7 +76,31 @@ class Parser {
       return new Expr.Unary(operator, right);
     }
 
-    return primary();
+    return call();
+  }
+
+  private Expr call() {
+    Expr expr = primary();
+    while (match(LEFT_PAREN)) {
+      expr = finishCall(expr);
+    }
+    return expr;
+  }
+
+  private Expr finishCall(Expr callee) {
+    List<Expr> arguments = new ArrayList<>();
+    if (!check(RIGHT_PAREN)) {
+      do {
+        if (arguments.size() >= 50) {
+          error(peek(), "Cannot have more than 255 arguments.");
+        }
+        arguments.add(expression());
+      } while (match(COMMA));
+    }
+
+    Token paren = consumeEndOfGroup();
+    return new Expr.Call(callee, paren, arguments);
+
   }
 
   private Expr primary() {
@@ -107,12 +134,10 @@ class Parser {
     return false;
   }
 
-  private void consumeEndOfGroup() {
+  private Token consumeEndOfGroup() {
     if (check(TokenType.RIGHT_PAREN)) {
-      advance();
-      return;
+      return advance();
     }
-
     throw error(peek(), "Expect ')' after expression.");
   }
 
@@ -121,8 +146,9 @@ class Parser {
     return peek().type == type;
   }
 
-  private void advance() {
+  private Token advance() {
     if (!isAtEnd()) current++;
+    return previous();
   }
 
   private boolean isAtEnd() {

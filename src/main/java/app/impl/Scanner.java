@@ -5,6 +5,8 @@ import app.exceptions.ScannerError;
 import java.util.ArrayList;
 import java.util.List;
 
+import static app.impl.TokenType.COLON;
+import static app.impl.TokenType.COMMA;
 import static app.impl.TokenType.EOF;
 import static app.impl.TokenType.IDENTIFIER;
 import static app.impl.TokenType.LEFT_PAREN;
@@ -51,6 +53,12 @@ class Scanner {
         break;
       case '+':
         addToken(PLUS);
+        break;
+      case ':':
+        addToken(COLON);
+        break;
+      case ',':
+        addToken(COMMA);
         break;
       case '*':
         addToken(STAR);
