@@ -1,7 +1,9 @@
 package app;
 
+import javax.swing.table.AbstractTableModel;
+
 class TableModelCellChangeNotifier implements CellChangeNotifier {
-  SheetTableModel sheetTableModel;
+  AbstractTableModel sheetTableModel;
 
   public TableModelCellChangeNotifier() {
   }

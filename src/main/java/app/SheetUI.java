@@ -13,14 +13,17 @@ import static java.awt.EventQueue.*;
  * @author bbaron
  */
 public class SheetUI extends javax.swing.JFrame {
+  public static final int COL_COUNT = 25;
+  public static final int ROW_COUNT = 50;
   final JTable table = new JTable();
   final JLabel label = new JLabel();
   final JButton button = new JButton();
   final JTextField field = new JTextField();
-  final SheetTableModel model;
+//  final SheetTableModel model;
   final TableModelCellChangeNotifier notifier;
   int selectedRow = Integer.MIN_VALUE;
   int selectedCol = Integer.MIN_VALUE;
+  final SheetImpl sheet;
 
   private void layoutStuff() {
     JPanel jPanel = new JPanel();
@@ -71,21 +74,21 @@ public class SheetUI extends javax.swing.JFrame {
 
   public SheetUI() {
     notifier = new TableModelCellChangeNotifier();
-    Sheet sheet = new SheetImpl(notifier);
-    model = new SheetTableModel(sheet);
-    notifier.sheetTableModel = model;
+    sheet = new SheetImpl(notifier);
+//    model = new SheetTableModel(sheet);
+    notifier.sheetTableModel = sheet;
     for (int row = 0; row < 10; row++) {
       for (int col = 1; col < 10; col++) {
-        model.setValueAt("" + ((row + 1) * col + row + col), row, col);
+        sheet.setValueAt("" + ((row + 1) * col + row + col), row, col);
       }
     }
-    model.setValueAt("=(A1 + A2) * (B1 + B2)", 20, 1);
+    sheet.setValueAt("=(A1 + A2) * (B1 + B2)", 20, 1);
     label.setToolTipText("");
     field.setText("");
     button.setText("OK");
     button.addActionListener(this::okButtonActionPerformed);
 
-    table.setModel(model);
+    table.setModel(sheet);
     table.setColumnSelectionAllowed(true);
     table.setRowSelectionAllowed(true);
     table.setCellSelectionEnabled(true);
@@ -103,7 +106,7 @@ public class SheetUI extends javax.swing.JFrame {
     if (leadCol < 1 || leadRow < 0) return;
     if (leadRow != selectedRow || leadCol != selectedCol) {
       System.out.print(String.format("Lead: %d, %d key: %s", leadRow, leadCol, makeKey(leadRow, leadCol)));
-      field.setText(model.getLiteralValueAt(leadRow, leadCol));
+      field.setText(sheet.getLiteralValueAt(leadRow, leadCol));
       selectedRow = leadRow;
       selectedCol = leadCol;
     }
@@ -128,8 +131,8 @@ public class SheetUI extends javax.swing.JFrame {
 
   private void okButtonActionPerformed(ActionEvent evt) {
     String text = field.getText();
-    model.setValueAt(text, selectedRow, selectedCol);
-    model.fireTableCellUpdated(selectedRow, selectedCol);
+    sheet.setValueAt(text, selectedRow, selectedCol);
+    sheet.fireTableCellUpdated(selectedRow, selectedCol);
   }
 
   private String makeKey(int row, int col) {

@@ -8,5 +8,7 @@ public interface Sheet {
 
   String getLiteral(String key);
 
+  String getLiteralValueAt(int row, int col);
+
 }
 

@@ -30,11 +30,10 @@ class SheetTest {
   private final Sheet sheet = new SheetImpl((row, col) -> {
   });
   private final SheetTableModel table = new SheetTableModel(sheet);
-  private final SheetTableModel model = new SheetTableModel(sheet);
 
 
-  private static final int LAST_COLUMN_INDEX = SheetTableModel.COL_COUNT - 1;
-  private static final int LAST_ROW_INDEX = SheetTableModel.ROW_COUNT - 1;
+  private static final int LAST_COLUMN_INDEX = SheetUI.COL_COUNT - 1;
+  private static final int LAST_ROW_INDEX = SheetUI.ROW_COUNT - 1;
   private final TableModelListener tableModelListener = mock(TableModelListener.class);
 
   @Test

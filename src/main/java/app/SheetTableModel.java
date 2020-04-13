@@ -2,11 +2,10 @@ package app;
 
 import javax.swing.table.AbstractTableModel;
 
+import static app.SheetUI.*;
 import static app.misc.Helpers.getSpreadsheetColumnName;
 
 class SheetTableModel extends AbstractTableModel {
-  static final int COL_COUNT = 25;
-  static final int ROW_COUNT = 50;
   private final Sheet sheet;
 
   SheetTableModel(Sheet sheet) {
