@@ -21,7 +21,7 @@ class Key {
   }
 
   private Key(int col, int row) {
-    this(String.format("%s%s", Helpers.getSpreadsheetColumnName(col), row));
+    this(String.format("%s%s", getSpreadsheetColumnName(col), row));
   }
 
   static Key of(String value) {
@@ -60,7 +60,7 @@ class Key {
   }
 
   String getColumn() {
-    return value.replace("\\d+", "");
+    return value.replaceAll("\\d+", "");
   }
 
   Key smaller(Key that) {
@@ -90,7 +90,7 @@ class Key {
   }
 
   int getRowIndex() {
-    return parseInt(value.replace("\\D+", ""));
+    return parseInt(value.replaceAll("\\D+", ""));
   }
 
   Key incrementRow() {

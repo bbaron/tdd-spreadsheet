@@ -1,19 +1,13 @@
 package app;
 
-import app.misc.Helpers;
-import app.misc.SheetLogger;
-import app.misc.StdOutLogger;
-
 import javax.swing.table.AbstractTableModel;
 
 import static app.misc.Helpers.getSpreadsheetColumnName;
-import static app.misc.SheetLogger.Verbosity.DEBUG;
 
 class SheetTableModel extends AbstractTableModel {
   static final int COL_COUNT = 25;
   static final int ROW_COUNT = 50;
   private final Sheet sheet;
-  private final SheetLogger logger = new StdOutLogger(DEBUG, getClass());
 
   SheetTableModel(Sheet sheet) {
     this.sheet = sheet;
@@ -51,7 +45,6 @@ class SheetTableModel extends AbstractTableModel {
     }
     String key = makeKey(rowIndex, columnIndex);
     sheet.put(key, aValue.toString());
-    super.fireTableCellUpdated(rowIndex, columnIndex);
   }
 
   @Override

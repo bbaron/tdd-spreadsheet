@@ -1,5 +1,7 @@
 package app.impl;
 
+import app.CellChangeNotifier;
+import app.misc.Helpers;
 import app.misc.SheetLogger;
 import app.misc.StdOutLogger;
 
@@ -18,6 +20,11 @@ class Grid {
   private final References references = new References();
   private final Interpreter interpreter = new Interpreter(environment, references);
   private final SheetLogger logger = new StdOutLogger(SheetLogger.Verbosity.DEBUG, getClass());
+  private final CellChangeNotifier notifier;
+
+  Grid(CellChangeNotifier notifier) {
+    this.notifier = notifier;
+  }
 
   String get(String key) {
     return stringify(environment.getOrDefault(Key.of(key), ""));
@@ -46,9 +53,9 @@ class Grid {
     String formula = literal;
     Object value = tryInteger(literal);
     if (value != null) {
-      environment.define(key, value);
+      define(key, value);
     } else if (!literal.startsWith("=")) {
-      environment.define(key, literal);
+      define(key, literal);
       return new Cell(key, literal, Expr.variable(key));
     }
 
@@ -57,7 +64,6 @@ class Grid {
     }
 
     Expr expr = interpreter.interpret(key, formula);
-//    var dependsOn = references.getDependsOn(key);
     recalculate(key);
     return new Cell(key, literal, expr);
   }
@@ -73,7 +79,7 @@ class Grid {
         if (c.expr != null) {
           Object result = interpreter.evaluate(c.expr);
           logger.debug("%s is re-evaluated to %s", v, result);
-          environment.define(v, result);
+          define(v, result);
         } else {
           logger.debug("%s does not have an expr", key);
         }
@@ -86,6 +92,14 @@ class Grid {
         }
       }
     }
+  }
+
+  private void define(Key key, Object value) {
+    environment.define(key, value);
+    int row = key.getRowIndex();
+    int col = key.getColumnIndex();
+    System.out.printf("cellChangedAt %s %s %s%n", key, row, col);
+    notifier.cellChangedAt(key.getRowIndex(), key.getColumnIndex());
   }
 
   private static Integer tryInteger(String literal) {

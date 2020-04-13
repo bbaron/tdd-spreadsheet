@@ -1,9 +1,14 @@
 package app.impl;
 
+import app.CellChangeNotifier;
 import app.Sheet;
 
 public class SheetImpl implements Sheet {
-  private final Grid grid = new Grid();
+  private final Grid grid;
+
+  public SheetImpl(CellChangeNotifier notifier) {
+    this.grid = new Grid(notifier);
+  }
 
   @Override
   public String get(String key) {
