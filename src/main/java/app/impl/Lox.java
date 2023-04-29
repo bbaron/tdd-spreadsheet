@@ -73,10 +73,10 @@ public class Lox {
   }
 
   private static String error(Token token, String message) {
-    if (token.type == TokenType.EOF) {
-      return report(token.column, " at end", message);
+    if (token.type() == TokenType.EOF) {
+      return report(token.column(), " at end", message);
     } else {
-      return report(token.column, " at '" + token.lexeme + "'", message);
+      return report(token.column(), " at '" + token.lexeme() + "'", message);
     }
   }
 

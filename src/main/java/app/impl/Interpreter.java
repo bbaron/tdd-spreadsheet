@@ -6,8 +6,6 @@ import app.exceptions.SheetError;
 import app.misc.SheetLogger;
 import app.misc.StdOutLogger;
 
-import java.util.List;
-
 import static app.misc.SheetLogger.Verbosity.DEBUG;
 
 class Interpreter implements Expr.Visitor<Object> {
@@ -22,11 +20,11 @@ class Interpreter implements Expr.Visitor<Object> {
 
   Expr interpret(Key key, String formula) {
     try {
-      Scanner scanner = new Scanner(formula);
-      List<Token> tokens = scanner.scanTokens();
-      Parser parser = new Parser(tokens, key, references);
-      Expr expression = parser.parse();
-      Object value = evaluate(expression);
+      var scanner = new Scanner(formula);
+      var tokens = scanner.scanTokens();
+      var parser = new Parser(tokens, key, references);
+      var expression = parser.parse();
+      var value = evaluate(expression);
       environment.define(key, value);
       return expression;
     } catch (SheetError e) {
@@ -42,62 +40,57 @@ class Interpreter implements Expr.Visitor<Object> {
   }
 
   @Override
-  public Object visitBinaryExpr(Expr.Binary expr) {
-    Object left = evaluate(expr.left);
-    Object right = evaluate(expr.right);
-    checkNumberOperands(expr.operator, left, right);
+  public Object visit(Expr.Binary expr) {
+    var left = evaluate(expr.left());
+    var right = evaluate(expr.right());
+    checkNumberOperands(expr.operator(), left, right);
+    var lhs = (double) left;
+    var rhs = (double) right;
 
-    switch (expr.operator.type) {
-      case PLUS:
-        return (double) left + (double) right;
-      case MINUS:
-        return (double) left - (double) right;
-      case SLASH:
-        return (double) left / (double) right;
-      case STAR:
-        return (double) left * (double) right;
-      default:
-        throw new InternalError();
-    }
+    return switch (expr.operator().type()) {
+      case PLUS -> lhs + rhs;
+      case MINUS -> lhs - rhs;
+      case SLASH -> lhs / rhs;
+      case STAR -> lhs * rhs;
+      default -> throw new InternalError();
+    };
   }
 
   @Override
-  public Object visitGroupingExpr(Expr.Grouping expr) {
-    return evaluate(expr.expression);
+  public Object visit(Expr.Grouping expr) {
+    return evaluate(expr.expression());
   }
 
   @Override
-  public Object visitLiteralExpr(Expr.Literal expr) {
-    return expr.value;
+  public Object visit(Expr.Literal expr) {
+    return expr.value();
   }
 
   @Override
-  public Object visitUnaryExpr(Expr.Unary expr) {
-    Object right = evaluate(expr.right);
-    checkNumberOperand(expr.operator, right);
-    switch (expr.operator.type) {
-      case MINUS:
-        return -(double) right;
-      case PLUS:
-        return +(double) right;
-      default:
-        throw new InternalError();
-    }
+  public Object visit(Expr.Unary expr) {
+    var right = evaluate(expr.right());
+    checkNumberOperand(expr.operator(), right);
+    var rhs = (double) right;
+    return switch (expr.operator().type()) {
+      case MINUS -> -rhs;
+      case PLUS -> +rhs;
+      default -> throw new InternalError();
+    };
   }
 
   @Override
-  public Object visitVariableExpr(Expr.Variable expr) {
-    return environment.getOrDefault(expr.name.key, 0.0);
+  public Object visit(Expr.Variable expr) {
+    return environment.getOrDefault(expr.name().key(), 0.0);
   }
 
   private void checkNumberOperand(Token operator, Object operand) {
     if (operand instanceof Double) return;
-    throw new RuntimeError(operator.column, "Operand must be a number.");
+    throw new RuntimeError(operator.column(), "Operand must be a number.");
   }
 
   private void checkNumberOperands(Token operator, Object left, Object right) {
     if (left instanceof Double && right instanceof Double) return;
-    throw new RuntimeError(operator.column, "Operands must be numbers.");
+    throw new RuntimeError(operator.column(), "Operands must be numbers.");
   }
 
 }

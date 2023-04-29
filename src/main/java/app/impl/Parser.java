@@ -78,13 +78,13 @@ class Parser {
 
   private Expr primary() {
     if (match(NUMBER)) {
-      return new Expr.Literal(previous().literal);
+      return new Expr.Literal(previous().literal());
     }
 
     if (match(IDENTIFIER)) {
       var variable = new Expr.Variable(previous());
-      logger.debug("%s is referencing %s", key, variable.name.key);
-      references.addDependsOn(key, variable.name.key);
+      logger.debug("%s is referencing %s", key, variable.name().key());
+      references.addDependsOn(key, variable.name().key());
       return variable;
     }
 
@@ -118,7 +118,7 @@ class Parser {
 
   private boolean check(TokenType type) {
     if (isAtEnd()) return false;
-    return peek().type == type;
+    return peek().type() == type;
   }
 
   private void advance() {
@@ -126,7 +126,7 @@ class Parser {
   }
 
   private boolean isAtEnd() {
-    return peek().type == EOF;
+    return peek().type() == EOF;
   }
 
   private Token peek() {
@@ -138,7 +138,7 @@ class Parser {
   }
 
   private ParseError error(Token token, String message) {
-    throw new ParseError(message, token.lexeme, token.column, token.isAtEnd());
+    throw new ParseError(message, token);
   }
 
 }
