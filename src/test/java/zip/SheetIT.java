@@ -1,6 +1,8 @@
 package zip;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -9,15 +11,17 @@ import junit.framework.TestCase;
  * Time: 12:20:19 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Sheet_UT extends TestCase {
+public class SheetIT {
 
-    public void testThatCellsAreEmptyByDefault() {
+    @Test
+    void testThatCellsAreEmptyByDefault() {
         Sheet sheet = new Sheet();
         assertEquals(Sheet.EMPTY_CELL_VALUE, sheet.get("A1"));
         assertEquals(Sheet.EMPTY_CELL_VALUE, sheet.get("ZX347"));
     }
 
-    public void testThatTextCellsAreStored() {
+    @Test
+    void testThatTextCellsAreStored() {
         Sheet sheet = new Sheet();
         String theCell = "A21";
         sheet.put(theCell, "A string");
@@ -28,7 +32,8 @@ public class Sheet_UT extends TestCase {
         assertEquals(Sheet.EMPTY_CELL_VALUE, sheet.get(theCell));
     }
 
-    public void testThatManyCellsExist() {
+    @Test
+    void testThatManyCellsExist() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "First");
         sheet.put("X27", "Second");
@@ -42,7 +47,8 @@ public class Sheet_UT extends TestCase {
         assertEquals("ZX901 same", "Third", sheet.get("ZX901"));
     }
 
-    public void testThatNumericCellsAreIdentifiedAndStored() {
+    @Test
+    void testThatNumericCellsAreIdentifiedAndStored() {
         Sheet sheet = new Sheet();
         String theCell = "A21";
 
@@ -62,7 +68,8 @@ public class Sheet_UT extends TestCase {
         assertEquals(" ", sheet.get(theCell));
     }
 
-    public void testThatWeHaveAccessToCellLiteralValuesForEditing() {
+    @Test
+    void testThatWeHaveAccessToCellLiteralValuesForEditing() {
         Sheet sheet = new Sheet();
         String theCell = "A21";
 
@@ -76,106 +83,123 @@ public class Sheet_UT extends TestCase {
         assertEquals("=7", sheet.getLiteral(theCell));
     }
 
-    public void testFormulaSpec() {
+    @Test
+    void testFormulaSpec() {
         Sheet sheet = new Sheet();
         sheet.put("B1", " =7"); // note leading space
         assertEquals("Not a formula", " =7", sheet.get("B1"));
         assertEquals("Unchanged", " =7", sheet.getLiteral("B1"));
     }
 
-    public void testConstantFormula() {
+    @Test
+    void testConstantFormula() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=7");
         assertEquals("Formula", "=7", sheet.getLiteral("A1"));
         assertEquals("Value", "7", sheet.get("A1"));
     }
 
-    public void testParentheses() {
+    @Test
+    void testParentheses() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=(7)");
         assertEquals("Parends", "7", sheet.get("A1"));
     }
 
-    public void testDeepParentheses() {
+    @Test
+    void testDeepParentheses() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=((((10))))");
         assertEquals("Parends", "10", sheet.get("A1"));
     }
 
-    public void testMultiply() {
+    @Test
+    void testMultiply() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=2*3*4");
         assertEquals("Times", "24", sheet.get("A1"));
     }
 
-    public void testDivide() {
+    @Test
+    void testDivide() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=16/4");
         assertEquals("Divide", "4", sheet.get("A1"));
     }
 
-    public void testAdd() {
+    @Test
+    void testAdd() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=71+2+3");
         assertEquals("Add", "76", sheet.get("A1"));
     }
 
-    public void testSubtract() {
+    @Test
+    void testSubtract() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=99-42-6");
         assertEquals("Subtract", "51", sheet.get("A1"));
     }
 
-    public void testExponentiation() {
+    @Test
+    void testExponentiation() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=3^2^2");
         assertEquals("Exponentiation", "81", sheet.get("A1"));
     }
 
-    public void testPrecedence() {
+    @Test
+    void testPrecedence() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=7+2*3");
         assertEquals("Precedence", "13", sheet.get("A1"));
     }
 
-    public void testFullExpression() {
+    @Test
+    void testFullExpression() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=7*(2+3)*((((2+1))))");
         assertEquals("Expr", "105", sheet.get("A1"));
     }
 
-    public void testComplexExpression() {
+    @Test
+    void testComplexExpression() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=((7*(2+3)*((((2+1))))-15)/10)^2");
         assertEquals("Expr", "81", sheet.get("A1"));
     }
 
-    public void testSimpleFormulaError() {
+    @Test
+    void testSimpleFormulaError() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=7*");
         assertEquals("Error", Sheet.FORMULA_ERROR, sheet.get("A1"));
     }
 
-    public void testParenthesisError() {
+    @Test
+    void testParenthesisError() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=(((((7))");
         assertEquals("Error", Sheet.FORMULA_ERROR, sheet.get("A1"));
     }
 
-    public void testDivideByZeroError() {
+    @Test
+    void testDivideByZeroError() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=7/0");
         assertEquals("Error", Sheet.FORMULA_ERROR, sheet.get("A1"));
     }
 
-    public void testThatCellReferenceWorks() {
+    @Test
+    void testThatCellReferenceWorks() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "8");
         sheet.put("A2", "=A1");
         assertEquals("cell lookup", "8", sheet.get("A2"));
     }
 
-    public void testThatCellChangesPropagate() {
+    @Test
+    void testThatCellChangesPropagate() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "8");
         sheet.put("A2", "=A1");
@@ -185,7 +209,8 @@ public class Sheet_UT extends TestCase {
         assertEquals("cell change propagation", "9", sheet.get("A2"));
     }
 
-    public void testThatFormulasKnowCellsAndRecalculate() {
+    @Test
+    void testThatFormulasKnowCellsAndRecalculate() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "8");
         sheet.put("A2", "3");
@@ -196,7 +221,8 @@ public class Sheet_UT extends TestCase {
         assertEquals("re-calculation", "18", sheet.get("B1"));
     }
 
-    public void testThatDeepPropagationWorks() {
+    @Test
+    void testThatDeepPropagationWorks() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "8");
         sheet.put("A2", "=A1");
@@ -208,7 +234,8 @@ public class Sheet_UT extends TestCase {
         assertEquals("deep re-calculation", "6", sheet.get("A4"));
     }
 
-    public void testThatFormulaWorksWithManyCells() {
+    @Test
+    void testThatFormulaWorksWithManyCells() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "10");
         sheet.put("A2", "=A1+B1");
@@ -223,13 +250,15 @@ public class Sheet_UT extends TestCase {
         assertEquals("multiple expressions - B4", "51", sheet.get("B4"));
     }
 
-    public void testThatCircularReferenceDoesntCrash() {
+    @Test
+    void testThatCircularReferenceDoesntCrash() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=A1");
         assertTrue(true);
     }
 
-    public void testThatCircularReferencesAdmitIt() {
+    @Test
+    void testThatCircularReferencesAdmitIt() {
         Sheet sheet = new Sheet();
         sheet.put("A1", "=A2");
         sheet.put("A2", "=A3");
