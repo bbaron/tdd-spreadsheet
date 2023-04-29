@@ -76,7 +76,7 @@ class Grid {
       Cell c = getCell(v);
       if (c != null) {
         if (c.expr != null) {
-          Object result = interpreter.dispatch(c.expr);
+          Object result = interpreter.apply(c.expr);
           logger.debug("%s is re-evaluated to %s", v, result);
           define(v, result);
         } else {

@@ -38,6 +38,10 @@ class Parser {
     return expr;
   }
 
+  static Expr apply(List<Token> tokens, Key key, References references) {
+    return new Parser(tokens, key, references).parse();
+  }
+
   private Expr expression() {
     return addition();
   }

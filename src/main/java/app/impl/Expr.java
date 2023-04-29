@@ -6,7 +6,7 @@ sealed interface Expr {
 
   record Grouping(Expr expression) implements Expr {}
 
-  record Literal(Object value) implements Expr {}
+  record Literal(double value) implements Expr {}
 
   record Unary(Token operator, Expr right) implements Expr {}
 

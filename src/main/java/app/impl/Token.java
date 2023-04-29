@@ -1,8 +1,8 @@
 package app.impl;
 
-public record Token(TokenType type, String lexeme, Object literal, int column, Key key) {
+public record Token(TokenType type, String lexeme, Double literal, int column, Key key) {
 
-  public Token(TokenType type, String lexeme, Object literal, int column) {
+  public Token(TokenType type, String lexeme, Double literal, int column) {
     this(type, lexeme, literal, column, null);
   }
 

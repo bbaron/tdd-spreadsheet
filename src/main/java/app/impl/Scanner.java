@@ -37,6 +37,10 @@ class Scanner {
     return tokens;
   }
 
+  static List<Token> apply(String source) {
+    return new Scanner(source).scanTokens();
+  }
+
   private void scanToken() {
     char c = advance();
     switch (c) {
@@ -96,8 +100,7 @@ class Scanner {
       while (isDigit(peek())) advance();
     }
 
-    addToken(NUMBER,
-        Double.parseDouble(source.substring(start, current)));
+    addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
   }
 
   private boolean isDigit(char c) {
@@ -115,9 +118,7 @@ class Scanner {
   }
 
   private boolean isAlpha(char c) {
-    return (c >= 'a' && c <= 'z') ||
-        (c >= 'A' && c <= 'Z') ||
-        c == '_';
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
   }
 
   private boolean isAtEnd() {
@@ -134,7 +135,7 @@ class Scanner {
     addToken(type, null);
   }
 
-  private void addToken(TokenType type, Object literal) {
+  private void addToken(TokenType type, Double literal) {
     String text = source.substring(start, current);
 
     Key key = type == IDENTIFIER ? Key.of(text) : null;
