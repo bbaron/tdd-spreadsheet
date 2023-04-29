@@ -8,7 +8,7 @@ import app.misc.StdOutLogger;
 
 import static app.misc.SheetLogger.Verbosity.DEBUG;
 
-class Interpreter implements Expr.Visitor<Object> {
+class Interpreter {
   private final Environment environment;
   private final References references;
   private final SheetLogger logger = new StdOutLogger(DEBUG, getClass());
@@ -24,7 +24,7 @@ class Interpreter implements Expr.Visitor<Object> {
       var tokens = scanner.scanTokens();
       var parser = new Parser(tokens, key, references);
       var expression = parser.parse();
-      var value = evaluate(expression);
+      var value = dispatch(expression);
       environment.define(key, value);
       return expression;
     } catch (SheetError e) {
@@ -35,14 +35,19 @@ class Interpreter implements Expr.Visitor<Object> {
     }
   }
 
-  Object evaluate(Expr expr) {
-    return expr.accept(this);
+  Object dispatch(Expr expr) {
+    return switch (expr) {
+      case Expr.Binary e -> evaluate(e);
+      case Expr.Grouping e -> evaluate(e);
+      case Expr.Literal e -> evaluate(e);
+      case Expr.Unary e -> evaluate(e);
+      case Expr.Variable e -> evaluate(e);
+    };
   }
 
-  @Override
-  public Object visit(Expr.Binary expr) {
-    var left = evaluate(expr.left());
-    var right = evaluate(expr.right());
+  private Object evaluate(Expr.Binary expr) {
+    var left = dispatch(expr.left());
+    var right = dispatch(expr.right());
     checkNumberOperands(expr.operator(), left, right);
     var lhs = (double) left;
     var rhs = (double) right;
@@ -56,19 +61,16 @@ class Interpreter implements Expr.Visitor<Object> {
     };
   }
 
-  @Override
-  public Object visit(Expr.Grouping expr) {
-    return evaluate(expr.expression());
+  private Object evaluate(Expr.Grouping expr) {
+    return dispatch(expr.expression());
   }
 
-  @Override
-  public Object visit(Expr.Literal expr) {
+  private Object evaluate(Expr.Literal expr) {
     return expr.value();
   }
 
-  @Override
-  public Object visit(Expr.Unary expr) {
-    var right = evaluate(expr.right());
+  private Object evaluate(Expr.Unary expr) {
+    var right = dispatch(expr.right());
     checkNumberOperand(expr.operator(), right);
     var rhs = (double) right;
     return switch (expr.operator().type()) {
@@ -78,8 +80,7 @@ class Interpreter implements Expr.Visitor<Object> {
     };
   }
 
-  @Override
-  public Object visit(Expr.Variable expr) {
+  private Object evaluate(Expr.Variable expr) {
     return environment.getOrDefault(expr.name().key(), 0.0);
   }
 
