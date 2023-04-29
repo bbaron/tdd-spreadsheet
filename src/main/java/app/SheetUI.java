@@ -74,12 +74,12 @@ public class SheetUI extends javax.swing.JFrame {
     Sheet sheet = new SheetImpl(notifier);
     model = new SheetTableModel(sheet);
     notifier.sheetTableModel = model;
-    for (int row = 0; row < 10; row++) {
-      for (int col = 1; col < 10; col++) {
-        model.setValueAt("" + ((row + 1) * col + row + col), row, col);
-      }
-    }
-    model.setValueAt("=(A1 + A2) * (B1 + B2)", 20, 1);
+//    for (int row = 0; row < 10; row++) {
+//      for (int col = 1; col < 10; col++) {
+//        model.setValueAt("" + ((row + 1) * col + row + col), row, col);
+//      }
+//    }
+//    model.setValueAt("=(A1 + A2) * (B1 + B2)", 20, 1);
     label.setToolTipText("");
     field.setText("");
     button.setText("OK");
@@ -102,7 +102,7 @@ public class SheetUI extends javax.swing.JFrame {
     int leadCol = getColumnModel().getLeadSelectionIndex();
     if (leadCol < 1 || leadRow < 0) return;
     if (leadRow != selectedRow || leadCol != selectedCol) {
-      System.out.print(String.format("Lead: %d, %d key: %s", leadRow, leadCol, makeKey(leadRow, leadCol)));
+      System.out.printf("Lead: %d, %d key: %s", leadRow, leadCol, makeKey(leadRow, leadCol));
       field.setText(model.getLiteralValueAt(leadRow, leadCol));
       selectedRow = leadRow;
       selectedCol = leadCol;
