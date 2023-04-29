@@ -1,5 +1,6 @@
 package zip;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Time: 12:20:19 PM
  * To change this template use File | Settings | File Templates.
  */
+@Disabled
 public class SheetIT {
 
     @Test

@@ -1,7 +1,6 @@
 package app.impl;
 
 import app.CellChangeNotifier;
-import app.misc.Helpers;
 import app.misc.SheetLogger;
 import app.misc.StdOutLogger;
 
@@ -77,7 +76,7 @@ class Grid {
       Cell c = getCell(v);
       if (c != null) {
         if (c.expr != null) {
-          Object result = interpreter.evaluate(c.expr);
+          Object result = interpreter.apply(c.expr);
           logger.debug("%s is re-evaluated to %s", v, result);
           define(v, result);
         } else {

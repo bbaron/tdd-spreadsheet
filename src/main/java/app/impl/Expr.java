@@ -1,93 +1,20 @@
 package app.impl;
 
-public abstract class Expr {
-  interface Visitor<R> {
-    R visitBinaryExpr(Binary expr);
+sealed interface Expr {
 
-    R visitGroupingExpr(Grouping expr);
+  record Binary(Expr left, Token operator, Expr right) implements Expr {}
 
-    R visitLiteralExpr(Literal expr);
+  record Grouping(Expr expression) implements Expr {}
 
-    R visitUnaryExpr(Unary expr);
+  record Literal(double value) implements Expr {}
 
-    R visitVariableExpr(Variable expr);
-  }
+  record Unary(Token operator, Expr right) implements Expr {}
 
-  static class Binary extends Expr {
-    Binary(Expr left, Token operator, Expr right) {
-      this.left = left;
-      this.operator = operator;
-      this.right = right;
-    }
+  record Variable(Token name) implements Expr {}
 
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitBinaryExpr(this);
-    }
 
-    final Expr left;
-    final Token operator;
-    final Expr right;
-  }
-
-  static class Grouping extends Expr {
-    Grouping(Expr expression) {
-      this.expression = expression;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitGroupingExpr(this);
-    }
-
-    final Expr expression;
-  }
-
-  static class Literal extends Expr {
-    Literal(Object value) {
-      this.value = value;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitLiteralExpr(this);
-    }
-
-    final Object value;
-  }
-
-  static class Unary extends Expr {
-    Unary(Token operator, Expr right) {
-      this.operator = operator;
-      this.right = right;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitUnaryExpr(this);
-    }
-
-    final Token operator;
-    final Expr right;
-  }
-
-  static class Variable extends Expr {
-    Variable(Token name) {
-      this.name = name;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitVariableExpr(this);
-    }
-
-    final Token name;
-  }
-
-  abstract <R> R accept(Visitor<R> visitor);
-
-  public static Expr.Variable variable(Key key) {
-    Token token = new Token(TokenType.IDENTIFIER, key.getValue(), null, 1, key );
+  static Expr.Variable variable(Key key) {
+    Token token = new Token(TokenType.IDENTIFIER, key.getValue(), null, 1, key);
     return new Expr.Variable(token);
   }
 }

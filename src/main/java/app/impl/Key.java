@@ -1,17 +1,17 @@
 package app.impl;
 
 import app.exceptions.KeyError;
-import app.misc.Helpers;
 
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 
-import static app.misc.Helpers.*;
-import static java.lang.Integer.*;
+import static app.misc.Helpers.getSpreadsheetColumnIndex;
+import static app.misc.Helpers.getSpreadsheetColumnName;
+import static java.lang.Integer.parseInt;
 
-class Key {
+final class Key {
   private static final ConcurrentMap<String, Key> keys = new ConcurrentHashMap<>();
   private final String value;
   private static final Pattern KEY_REGEX = Pattern.compile("^[A-Z]+[0-9]+$");
@@ -50,9 +50,7 @@ class Key {
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
-    if (!(obj instanceof Key)) return false;
-    Key that = (Key) obj;
-    return this.value.equals(that.value);
+    return obj instanceof Key other && Objects.equals(value, other.value);
   }
 
   String getValue() {

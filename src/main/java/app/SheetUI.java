@@ -105,7 +105,7 @@ public class SheetUI extends javax.swing.JFrame {
     int leadCol = getColumnModel().getLeadSelectionIndex();
     if (leadCol < 1 || leadRow < 0) return;
     if (leadRow != selectedRow || leadCol != selectedCol) {
-      System.out.print(String.format("Lead: %d, %d key: %s", leadRow, leadCol, makeKey(leadRow, leadCol)));
+      System.out.printf("Lead: %d, %d key: %s", leadRow, leadCol, makeKey(leadRow, leadCol));
       field.setText(sheet.getLiteralValueAt(leadRow, leadCol));
       selectedRow = leadRow;
       selectedCol = leadCol;

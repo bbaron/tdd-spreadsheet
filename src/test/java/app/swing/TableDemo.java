@@ -2,18 +2,14 @@ package app.swing;/*
  * TableDemo.java requires no other files.
  */
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
-import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.*;
 
-import static app.swing.TableDemos.*;
+import static app.swing.TableDemos.COLUMN_NAMES;
+import static app.swing.TableDemos.DATA;
 
 /**
  * TableDemo is just like SimpleTableDemo, except that it
@@ -47,8 +43,8 @@ public class TableDemo extends JPanel {
   }
 
   static class MyTableModel extends AbstractTableModel {
-    private String[] columnNames = COLUMN_NAMES;
-    private Object[][] data = DATA;
+    private final String[] columnNames = COLUMN_NAMES;
+    private final Object[][] data = DATA;
 
     public int getColumnCount() {
       return columnNames.length;
@@ -142,10 +138,6 @@ public class TableDemo extends JPanel {
   public static void main(String[] args) {
     //Schedule a job for the event-dispatching thread:
     //creating and showing this application's GUI.
-    javax.swing.SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        createAndShowGUI();
-      }
-    });
+    javax.swing.SwingUtilities.invokeLater(TableDemo::createAndShowGUI);
   }
 }
